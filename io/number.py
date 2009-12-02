@@ -1,6 +1,6 @@
 from math import ceil, floor
-from pypy.lang.io.register import register_method
-from pypy.lang.io.model import W_Number
+from io.register import register_method
+from io.model import W_Number
 
 @register_method("Number", '+', unwrap_spec=[float, float])
 def w_number_add(space, target, argument):

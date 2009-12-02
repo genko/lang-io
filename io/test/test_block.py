@@ -1,5 +1,5 @@
-from pypy.lang.io.parserhack import parse, interpret
-from pypy.lang.io.model import W_Block, W_Message
+from io.parserhack import parse, interpret
+from io.model import W_Block, W_Message
 import py.test
 
 def test_parse_block():

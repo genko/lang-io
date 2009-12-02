@@ -1,5 +1,5 @@
-from pypy.lang.io.parserhack import interpret
-from pypy.lang.io.model import W_Message
+from io.parserhack import interpret
+from io.model import W_Message
 import py
 
 def test_message_arg_at():

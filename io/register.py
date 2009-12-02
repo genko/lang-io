@@ -1,4 +1,4 @@
-from pypy.lang.io import model
+from io import model
 cfunction_definitions = {}
 def register_method(type_name, slot_name, unwrap_spec=None, alias=None):
     if alias is None:

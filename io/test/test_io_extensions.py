@@ -1,6 +1,6 @@
-from pypy.lang.io.parserhack import interpret
+from io.parserhack import interpret
 import py
-from pypy.lang.io.model import W_Object, W_List, W_Block
+from io.model import W_Object, W_List, W_Block
 
 def test_map_asObject():
     inp = 'Map clone atPut("1", 12345) atPut("2", 99) atPut("3", 3) atPut("4", 234) asObject'

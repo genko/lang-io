@@ -1,5 +1,5 @@
-from pypy.lang.io.register import register_method
-from pypy.lang.io.model import W_ImmutableSequence, W_Block, W_Number
+from io.register import register_method
+from io.model import W_ImmutableSequence, W_Block, W_Number
 
 @register_method('Object', 'setSlot', unwrap_spec=[object, str, object])
 def w_object_set_slot(space, w_target, name, w_value):
@@ -179,7 +179,7 @@ def object_do_string(space, w_target, code):
 # XXX replace with the original one in A2_Object.io when it works
 @register_method('Object', 'newSlot', unwrap_spec=[object, str, object])
 def object_new_slot(space, w_target, name, w_value):
-    from pypy.lang.io.model import W_CFunction
+    from io.model import W_CFunction
     w_target.slots[name] = w_value
 
     def setSlot(my_space, w_w_target, w_w_message, w_w_context):

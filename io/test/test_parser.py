@@ -1,7 +1,7 @@
 import py
-from pypy.lang.io.parser import parse, IoParser
-from pypy.lang.io.model import W_Message, W_Number
-from pypy.lang.io.objspace import ObjSpace
+from io.parser import parse, IoParser
+from io.model import W_Message, W_Number
+from io.objspace import ObjSpace
 
 space = ObjSpace()
 def test_parse_number_token():

@@ -1,6 +1,6 @@
-from pypy.lang.io.parserhack import parse, interpret
-from pypy.lang.io.model import W_Object
-from pypy.lang.io.coroutinemodel import W_Coroutine
+from io.parserhack import parse, interpret
+from io.model import W_Object
+from io.coroutinemodel import W_Coroutine
 
 import py
 

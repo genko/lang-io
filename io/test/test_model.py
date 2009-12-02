@@ -1,5 +1,5 @@
-from pypy.lang.io.model import parse_literal, W_Number, W_Object
-from pypy.lang.io.objspace import ObjSpace
+from io.model import parse_literal, W_Number, W_Object
+from io.objspace import ObjSpace
 
 def test_parse_literal():
     space = ObjSpace()

@@ -4,7 +4,7 @@
 
 from pypy.rlib.parsing.regexparse import parse_regex
 from pypy.rlib.parsing.lexer import Lexer, Token, SourcePos
-from pypy.lang.io.model import W_Message, parse_literal, parse_hex
+from io.model import W_Message, parse_literal, parse_hex
 
 # taken from rlib/parsing/test/python_lexer.py
 # reg exp helper methods

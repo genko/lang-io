@@ -1,5 +1,5 @@
-from pypy.lang.io.parserhack import parse, interpret
-from pypy.lang.io.model import W_List, W_Number
+from io.parserhack import parse, interpret
+from io.model import W_List, W_Number
 import py.test
 
 

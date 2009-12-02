@@ -1,5 +1,5 @@
-from pypy.lang.io.register import register_method
-from pypy.lang.io.model import W_Message
+from io.register import register_method
+from io.model import W_Message
 
 @register_method('Call', 'argAt')
 def call_arg_at(space, w_target, w_message, w_context):

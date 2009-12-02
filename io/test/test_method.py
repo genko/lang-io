@@ -1,5 +1,5 @@
-from pypy.lang.io.parserhack import parse, interpret
-from pypy.lang.io.model import W_Block
+from io.parserhack import parse, interpret
+from io.model import W_Block
 import py.test
 # "W_Message(space,"method", [W_Message(space,"1", [],), ],)"
 def test_get_slot():

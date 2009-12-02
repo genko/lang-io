@@ -1,18 +1,18 @@
 from pypy.rlib.objectmodel import instantiate
-from pypy.lang.io.model import W_Number, W_Object, W_CFunction, W_Block, W_Message, W_List, W_Map, W_ImmutableSequence
-from pypy.lang.io.coroutinemodel import W_Coroutine
-from pypy.lang.io.register import cfunction_definitions
+from io.model import W_Number, W_Object, W_CFunction, W_Block, W_Message, W_List, W_Map, W_ImmutableSequence
+from io.coroutinemodel import W_Coroutine
+from io.register import cfunction_definitions
 
-import pypy.lang.io.number
-import pypy.lang.io.object
-import pypy.lang.io.block
-import pypy.lang.io.list
-import pypy.lang.io.call
-import pypy.lang.io.message
-import pypy.lang.io.map
-import pypy.lang.io.coroutine
-import pypy.lang.io.sequence
-import pypy.lang.io.compiler
+import io.number
+import io.object
+import io.block
+import io.list
+import io.call
+import io.message
+import io.map
+import io.coroutine
+import io.sequence
+import io.compiler
 
 class ObjSpace(object):
     """docstring for ObjSpace"""

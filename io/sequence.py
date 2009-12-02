@@ -1,5 +1,5 @@
-from pypy.lang.io.register import register_method
-from pypy.lang.io.model import W_Message, W_ImmutableSequence
+from io.register import register_method
+from io.model import W_Message, W_ImmutableSequence
 
 @register_method('Sequence', '..', unwrap_spec=[object, str])
 def sequence_append(space, w_sequence, w_append_seq):

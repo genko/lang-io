@@ -1,5 +1,5 @@
-from pypy.lang.io.register import register_method
-from pypy.lang.io.model import W_Message, W_ImmutableSequence
+from io.register import register_method
+from io.model import W_Message, W_ImmutableSequence
 
 @register_method('Message', 'argAt', unwrap_spec=[object, int])
 def message_arg_at(space, w_message, arg_num):

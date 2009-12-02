@@ -1,5 +1,5 @@
-from pypy.lang.io.parserhack import parse, interpret
-from pypy.lang.io.model import W_Map, W_Number, W_ImmutableSequence, W_List
+from io.parserhack import parse, interpret
+from io.model import W_Map, W_Number, W_ImmutableSequence, W_List
 import py.test
 
 def test_map_proto():

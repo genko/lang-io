@@ -1,10 +1,9 @@
-import autopath
 import py
 import os
 import glob
 
-from pypy.lang.io.model import W_Number, parse_literal, W_Message
-from pypy.lang.io.objspace import ObjSpace
+from io.model import W_Number, parse_literal, W_Message
+from io.objspace import ObjSpace
 
 class MessageParser(object):
     def __init__(self, space, input,):

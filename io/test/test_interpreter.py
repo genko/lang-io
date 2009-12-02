@@ -1,5 +1,5 @@
-from pypy.lang.io.parserhack import interpret
-from pypy.lang.io.model import W_Number
+from io.parserhack import interpret
+from io.model import W_Number
 def test_even_simpler():
     x, _ = interpret("2")
     assert x.value == 2

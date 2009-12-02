@@ -3,7 +3,7 @@ import greenlet
 import py.magic
 py.magic.__dict__['greenlet'] = greenlet.greenlet
 
-from pypy.lang.io.model import W_Object
+from io.model import W_Object
 from pypy.rlib.rcoroutine import make_coroutine_classes
 d = make_coroutine_classes(W_Object)
 

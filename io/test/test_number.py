@@ -1,5 +1,5 @@
-from pypy.lang.io.parserhack import interpret
-from pypy.lang.io.model import W_Number
+from io.parserhack import interpret
+from io.model import W_Number
 import sys
 if sys.version_info < (2, 6):
     def isnan(num):

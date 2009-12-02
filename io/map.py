@@ -1,5 +1,5 @@
-from pypy.lang.io.register import register_method
-from pypy.lang.io.model import W_ImmutableSequence, W_Number, W_List
+from io.register import register_method
+from io.model import W_ImmutableSequence, W_Number, W_List
 
 @register_method('Map', 'atPut', unwrap_spec=[object, object, object])
 def map_at_put(space, w_target, w_key, w_value):

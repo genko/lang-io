@@ -1,6 +1,6 @@
-from pypy.lang.io.model import W_Message, W_ImmutableSequence
-from pypy.lang.io.parserhack import parse
-from pypy.lang.io.objspace import ObjSpace
+from io.model import W_Message, W_ImmutableSequence
+from io.parserhack import parse
+from io.objspace import ObjSpace
 
 def test_simple():
     space = ObjSpace()

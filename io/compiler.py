@@ -1,6 +1,6 @@
-from pypy.lang.io.register import register_method
-from pypy.lang.io.model import W_Object, W_Number
-from pypy.lang.io.parser import get_lexer, parse
+from io.register import register_method
+from io.model import W_Object, W_Number
+from io.parser import get_lexer, parse
 @register_method('Compiler', 'tokensForString')
 def compiler_tokens_for_string(space, w_target, w_message, w_context):
     input = w_message.arguments[0].eval(space, w_context, w_target).value

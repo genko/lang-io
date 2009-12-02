@@ -1,7 +1,7 @@
 import py
 from pypy.rlib.parsing.lexer import Lexer, Token, SourcePos
 
-from pypy.lang.io.parser import get_lexer
+from io.parser import get_lexer
 
 iolexer = get_lexer()
 def test_lex_identifier():

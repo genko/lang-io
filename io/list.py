@@ -1,5 +1,5 @@
-from pypy.lang.io.register import register_method
-from pypy.lang.io.model import W_Number
+from io.register import register_method
+from io.model import W_Number
 @register_method('List', 'append')
 def list_append(space, w_target, w_message, w_context):
     assert w_message.arguments,  'requires at least one argument'
