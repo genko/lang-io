@@ -1,3 +1,4 @@
+from io.levels import Level, Levels
 class W_Object(object):
     """Base class for all io objects"""
     def __init__(self, space, protos = []):
@@ -45,6 +46,7 @@ class W_Object(object):
         return W_Object(self.space, [self])
         
     def __repr__(self):
+        """NOT RPYTHON"""
         return "<W_Object slots=%s>" % (self.slots.keys(),)
         
 class W_Number(W_Object):
@@ -65,6 +67,10 @@ class W_Number(W_Object):
         
     def hash(self):
         return hash(self.value)
+    
+    def __repr__(self):
+        """NOT RPYTHON"""
+        return "<W_Number %s>" % self.value
 
 class W_List(W_Object):
     def __init__(self, space, protos = [], items = []):
@@ -155,12 +161,19 @@ class W_Map(W_Object):
         
     def keys(self):
         return [x.key for x in self.items.values()]
+    
+    def __repr__(self):
+        """NOT RPYTHON"""
+        return "<W_Map entries=%r>" % self.items.values()
         
 class MapEntry(object):
     def __init__(self, w_key, w_value):
         self.key = w_key
         self.value = w_value
     
+    def __repr__(self):
+        """NOT RPYTHON"""
+        return "(key: %r, value: %r )" % (self.key, self.value)
         
 class W_ImmutableSequence(W_Object):
     def __init__(self, space, string, protos=[]):
@@ -177,6 +190,11 @@ class W_ImmutableSequence(W_Object):
         ims = self.clone()
         ims.value = value
         return ims 
+        
+    def __repr__(self):
+        """NOT RPYTHON"""
+        return "<W_ImmutableSequence value='%s'>" % self.value
+        
 class W_CFunction(W_Object):
     def __init__(self, space, function):
         self.function = function
@@ -197,6 +215,7 @@ class W_Message(W_Object):
         W_Object.__init__(self, space, [space.w_message])
 
     def __repr__(self):
+        """NOT RPYTHON"""
         return "Message(%r, %r, %r)" % (self.name, self.arguments, self.next)
 
     def hash(self):
@@ -223,7 +242,18 @@ class W_Message(W_Object):
             return self.next.eval(space, w_result, w_context)
         else:
             return w_result
-  
+    
+    def shuffle(self):
+        levels = Levels(self.space, self)
+        expressions = [self]
+        while len(expressions) >= 1:
+    	    n = expressions.pop()
+    	    print "MESSAGE %s" % n.name
+            while(n):
+                levels.attach(n, expressions)
+                expressions += n.arguments
+                n = n.next
+            levels.next_message()
 class W_Block(W_Object):
     def __init__(self, space, arguments, body, activateable=True, protos=[]):
         self.arguments = arguments
