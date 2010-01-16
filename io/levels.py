@@ -63,7 +63,7 @@ class Levels(object):
     def current_level(self):
         if len(self.stack) == 0:
             return None
-        return self.stack[0]
+        return self.stack[-1]
     
     def attach(self, w_message, expressions):
         print "attach(%r, %r)" % (w_message, expressions)
@@ -156,7 +156,7 @@ class Levels(object):
             self.current_level().attach_and_replace(w_message)
 
     def _attach_to_top_and_push(self, w_message, precedence):
-        top = self.stack[0]
+        top = self.stack[-1]
         top.attach_and_replace(w_message)
         # XXX Check for overflow of the pool.
         print 'current_level_precedence is %d' % self.current_level_precedence
@@ -168,6 +168,7 @@ class Levels(object):
         level = Level(w_message, Levels.ARG, self.current_level_precedence)
         self.stack.append(level)
         print self.stack
+
     def _name_for_assign_operator(self, operator, slot):
         operator_name = operator.name
         value = self.assign_operator_table.slots[operator_name]
@@ -192,27 +193,36 @@ class Levels(object):
     		level = self.current_level() 
     
     def _is_assign_operator(self, w_message):
-        return w_message.name in self.assign_operator_table.slots
+        message_name = self.space.newsequence(w_message.name)
+        return self.assign_operator_table.has_key(message_name)
         
     def _level_for_op(self, w_message):
         message_name = self.space.newsequence(w_message.name)
         if not self.operator_table.has_key(message_name):
             print "%s not found in the operator_table slots" % w_message.name
             return -1
-        value = self.operator_table.at(message_name).value
-        if type(value) == int:
+        operator = self.operator_table.at(message_name)
+        if type(operator) == io.model.W_Number:
+            value = operator.value
             if value < 0 or value >= Levels.IO_OP_MAX_LEVEL:
-                #error
-                pass
+                #'XXX Some corresponding exception'#error
+                raise IoException("compile error: Precedence for operators \
+                    must be between 0 and %d. Precedence was %d." 
+                    % (Levels.IO_OP_MAX_LEVEL - 1, value))
             return value
         else:
-            # error
-            return -1
+            raise IoException("compile error: Value for '%s' in Message \
+                OperatorTable operators is not a number. Values in the \
+                OperatorTable operators are numbers which indicate the \
+                precedence of the operator." % w_message.name)
+            
     def next_message(self):
         while len(self.stack) > 0:
             level = self.stack.pop()
             level.finish()
-            
+
+class IoException(Exception):
+    pass
 class Level(object):
     def __init__(self, w_message, level_type, precedence):
         super(Level, self).__init__()
@@ -231,26 +241,28 @@ class Level(object):
             print "Setting next message of %s to %s" % (self.message.name, w_message.name)
             self.message.next = w_message
     	elif self.type == Levels.ARG:
-    	    print "Adding Argument to %s(%s)" % self.message.name, w_message.name
+    	    print "Adding Argument to %s(%s)" % (self.message.name, w_message.name) 
     	    self.message.arguments.append(w_message)
         elif self.type == Levels.NEW:
-            print "Setting message to %s" % w_message.name
+            print "Setting message to %s" % (w_message.name,)
             self.message = w_message
         elif self.type == Levels.UNUSED:
             pass
+ 
     def finish(self):
         if self.message:
             self.message.next = None
             # Remove extra () we added in for operators, but do not need any more
             if len(self.message.arguments) == 1:
                 arg = self.message.arguments[0]
-                if len(arg.name) == 0 and len(arg.arguments) == 1 and arg.next == None:
+                if (arg.name == '' and len(arg.arguments) == 1 
+                                                        and arg.next == None):
                     self.message.arguments = arg.arguments
                     arg.arguments = []
         self.type = Levels.UNUSED
         
     def __repr__(self):
-        return "<Level type=%s precedence=%d message=%s" % (self.name_for_type(), self.precedence, self.message.name)
+        return "<Level type=%s precedence=%d message=%s" % (self.name_for_type(), self.precedence, self.message)
         
     def name_for_type(self):
         if self.type == Levels.ATTACH:
