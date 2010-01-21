@@ -45,6 +45,10 @@ def test_current_level():
     l.stack.insert(0, mock_level())
     assert l.current_level() is m
 
+def test_current_level_empty_stack():
+    l = Levels(space, mock_message())
+    l.stack = []
+    assert l.current_level() is None
 def test_levels__pop_down_to():
     l = Levels(space, mock_message())
     l.current_level_precedence = 99
@@ -101,7 +105,12 @@ def test_level_init():
     assert level.type == Levels.NEW
     
 def test_level_attach_and_replace():
-    pass
+    level = mock_level(Levels.ARG)
+    m = mock_message()
+    level.attach_and_replace(m)
+    assert level.type == Levels.ATTACH
+    assert level.message is m
+    assert level.arguments[0] is m
     
 def test_level_attach_type_attach():
     level = mock_level(Levels.ATTACH)
