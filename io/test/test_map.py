@@ -27,6 +27,11 @@ def test_at():
     inp = 'Map clone atPut("foo", "bar") atPut("lorem", "ipsum") at("foo")'
     res, space = interpret(inp)
     assert res.value == 'bar'
+
+def test_at_invalid_key():
+    inp = 'Map clone at("foo")'
+    res, space = interpret(inp)
+    assert res is space.w_nil
     
 def test_key_hashing():
     inp = 'Map clone atPut("1", "bar") atPut("nil", "ipsum") atPut("foo", 123) at("nil")'

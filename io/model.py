@@ -117,7 +117,11 @@ class W_Map(W_Object):
         return h
     
     def at(self, w_key):
-        return self.items[w_key.hash()].value
+        h = w_key.hash()
+        if h in self.items:
+            return self.items[h].value
+        else:
+            return self.space.w_nil
     
     def at_put(self, w_key, w_value):
         self.items[w_key.hash()] = MapEntry(w_key, w_value)
