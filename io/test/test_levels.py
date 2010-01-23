@@ -49,6 +49,7 @@ def test_current_level_empty_stack():
     l = Levels(space, mock_message())
     l.stack = []
     assert l.current_level() is None
+    
 def test_levels__pop_down_to():
     l = Levels(space, mock_message())
     l.current_level_precedence = 99
@@ -97,6 +98,24 @@ def test_levels_next_message():
     l.next_message()
     assert len(l.stack) == 0
     
+def test_levels__name_for_assign_operator():
+    m = mock_message(name=':=')
+    slot = mock_message(name="foo")
+    l = Levels(space, m)
+    assert l._name_for_assign_operator(m, slot).value == 'setSlot'
+
+def test_levels__name_for_assign_operator_with_type():
+    m = mock_message(name=':=')
+    slot = mock_message(name="Foo")
+    l = Levels(space, m)
+    assert l._name_for_assign_operator(m, slot).value == 'setSlotWithType'
+
+def test_levels__name_for_assign_operator_with_non_op():
+    m = mock_message(name=':fail=')
+    slot = mock_message(name="Foo")
+    l = Levels(space, m)
+    py.test.raises(IoException, 'l._name_for_assign_operator(m, slot)')
+
 # Tests for Level 
 def test_level_init():
     level = mock_level()
@@ -105,12 +124,13 @@ def test_level_init():
     assert level.type == Levels.NEW
     
 def test_level_attach_and_replace():
-    level = mock_level(Levels.ARG)
     m = mock_message()
-    level.attach_and_replace(m)
+    level = mock_level(level_type=Levels.ARG, message=m)
+    m2 = mock_message("argument")
+    level.attach_and_replace(m2)
     assert level.type == Levels.ATTACH
-    assert level.message is m
-    assert level.arguments[0] is m
+    assert level.message is m2
+    assert m.arguments[0] is m2
     
 def test_level_attach_type_attach():
     level = mock_level(Levels.ATTACH)

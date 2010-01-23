@@ -162,7 +162,8 @@ class Levels(object):
         print 'current_level_precedence is %d' % self.current_level_precedence
         if self.current_level_precedence >= Levels.IO_OP_MAX_LEVEL:
             # XXX raise an error
-            print "compile error: Overflowed operator stack. Only %d levels of operators currently supported." % (Levels.IO_OP_MAX_LEVEL-1)
+            print "compile error: Overflowed operator stack. Only %d levels \
+                    of operators currently supported." % (Levels.IO_OP_MAX_LEVEL-1)
             return
         self.current_level_precedence +=1
         level = Level(w_message, Levels.ARG, self.current_level_precedence)
@@ -171,19 +172,20 @@ class Levels(object):
 
     def _name_for_assign_operator(self, operator, slot):
         operator_name = operator.name
-        value = self.assign_operator_table.slots[operator_name]
-        if value is not None and isinstance(value, str):
+        value = self.assign_operator_table.at(
+                                        self.space.newsequence(operator_name))
+        if value is not self.space.w_nil and isinstance(value, 
+                                                io.model.W_ImmutableSequence):
             if operator_name == ":=" and slot.name[0].isupper():
-                return "setSlotWithType"
+                return self.space.newsequence("setSlotWithType")
             else:
                 return value
         else:
-            # XXX raise an error
-            print "compile error: Value for '%s' in Message OperatorTable \
-                    assignOperators is not a symbol. Values in the \
-                    OperatorTable assignOperators are symbols which are the \
-                    name of the operator." % operator_name
-            return 
+            raise IoException("compile error: Value for '%s' in Message \
+                    OperatorTable assignOperators is not a symbol. Values in \
+                    the OperatorTable assignOperators are symbols which are \
+                    the name of the operator." % operator_name)
+
     def _pop_down_to(self, target_level):
         level = self.current_level() 
         while (level.precedence <= target_level
