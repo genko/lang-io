@@ -156,17 +156,16 @@ class Levels(object):
             self.current_level().attach_and_replace(w_message)
 
     def _attach_to_top_and_push(self, w_message, precedence):
-        top = self.stack[-1]
+        top = self.current_level()
         top.attach_and_replace(w_message)
         # XXX Check for overflow of the pool.
         print 'current_level_precedence is %d' % self.current_level_precedence
         if self.current_level_precedence >= Levels.IO_OP_MAX_LEVEL:
-            # XXX raise an error
-            print "compile error: Overflowed operator stack. Only %d levels \
-                    of operators currently supported." % (Levels.IO_OP_MAX_LEVEL-1)
-            return
+            raise IoException("compile error: Overflowed operator stack. Only \
+                    %d levels of operators currently supported." 
+                    % (Levels.IO_OP_MAX_LEVEL-1))
         self.current_level_precedence +=1
-        level = Level(w_message, Levels.ARG, self.current_level_precedence)
+        level = Level(w_message, Levels.ARG, precedence)
         self.stack.append(level)
         print self.stack
 

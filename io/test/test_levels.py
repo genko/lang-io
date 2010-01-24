@@ -97,6 +97,29 @@ def test_levels_next_message():
         l.stack.append(mock_level())
     l.next_message()
     assert len(l.stack) == 0
+
+def test_levels__attach_to_top_and_push():
+    levels = Levels(space, mock_message())
+    m = mock_message(name='current')
+    m2 = mock_message(name='new_top')
+    current_level = mock_level(level_type=Levels.ARG, message=m, precedence=1)
+    levels.stack.append(current_level)
+
+    levels._attach_to_top_and_push(m2, 37)
+    
+    assert current_level.type == Levels.ATTACH
+    assert current_level.message == m2
+    assert m.arguments[0] is m2
+    
+    assert levels.current_level().message is m2
+    assert levels.current_level().type == Levels.ARG
+    assert levels.current_level().precedence == 37
+
+def test_levels__attach_to_top_and_push_raises_precedence_out_of_bounds():
+    levels = Levels(space, mock_message())
+    levels.current_level_precedence = 42
+    m = mock_message()
+    py.test.raises(IoException, 'levels._attach_to_top_and_push(m, 12)')
     
 def test_levels__name_for_assign_operator():
     m = mock_message(name=':=')
