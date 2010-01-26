@@ -73,18 +73,7 @@ class Levels(object):
         if self._is_assign_operator(w_message):
             current_level = self.current_level()
             attaching = current_level.message
-            if attaching is None:
-                # XXX raise an error
-                print "compile error: %s requires a symbol to its left." % w_message.name
-                return
-            if len(attaching.arguments) > 0:
-                # XXX raise an error
-                print "compile error: The symbol to the left of %s cannot have arguments." % w_message.name
-                return
-            if len(w_message.arguments) > 1:
-                # XXX raise an error
-                print "compile error: Assign operator passed multiple arguments, e.g., a := (b, c)." % w_message.name
-                return
+            self._check_attaching(attaching, w_message)
             # a := b ;
             slot_name_message = W_Message(self.space, "%s" % attaching.name, [])
             # slot_name_message.update_source_location(attaching)            
@@ -155,6 +144,18 @@ class Levels(object):
         else:
             self.current_level().attach_and_replace(w_message)
 
+    def _check_attaching(self, attaching, w_message):
+        if attaching is None:
+            raise IoException("compile error: %s requires a symbol to its \
+                                left." % w_message.name)
+        if len(attaching.arguments) > 0:
+            raise IoException("compile error: The symbol to the left of %s \
+                                cannot have arguments." % w_message.name)
+        if len(w_message.arguments) > 1:
+            raise IoException("compile error: Assign operator(%s) passed \
+                                multiple arguments, e.g., a := (b, c)." 
+                                % w_message.name)
+    
     def _attach_to_top_and_push(self, w_message, precedence):
         top = self.current_level()
         top.attach_and_replace(w_message)

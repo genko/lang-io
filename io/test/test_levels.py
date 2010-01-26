@@ -45,11 +45,69 @@ def test_current_level():
     l.stack.insert(0, mock_level())
     assert l.current_level() is m
 
+def test_levels_attach_semicolon_op():
+    l = Levels(space, mock_message())
+    l.stack.append(mock_level(level_type=Levels.ATTACH, precedence=7))
+    l.attach(mock_message(';'), [])
+    assert l.current_level().message.name == ';'
+    assert l.current_level_precedence == 0
+    
+def test_levels_attach_operator():
+    l = Levels(space, mock_message())
+    l.stack.append(mock_level(level_type=Levels.ATTACH, precedence=99, message=mock_message('stop')))
+    l.stack.append(mock_level(level_type=Levels.ATTACH, precedence=3, message=mock_message('7')))
+    l.attach(mock_message('+'), [])
+    assert l.current_level_precedence == 1
+    assert l.current_level().message.name == '+'
+    assert l.current_level().precedence == 3
+    assert l.stack[-2].message.name == '+'
+    assert l.stack[-2].precedence == 99
+    
+def test_levels_attach_operator_with_args():
+    l = Levels(space, mock_message())
+    p = mock_message('+', arguments=[mock_message('1095')], next=mock_message('foo'))
+    l.stack.append(mock_level(level_type=Levels.ATTACH, precedence=99, message=mock_message('stop')))
+    l.stack.append(mock_level(level_type=Levels.ATTACH, precedence=3, message=mock_message('7')))
+    l.attach(p, [])
+    assert p.next.name == ''
+    assert p.arguments == []
+    assert p.next.arguments[0].name == '1095'
+    assert p.next.next.name == 'foo'
+    
+def test_levels_attach_non_op():
+    l = Levels(space, mock_message())
+    message = mock_message('b', arguments=[mock_message('1095')], next=mock_message('foo'))
+    setattr(message, 'flag', False)
+    current_level = mock_level(level_type=Levels.ATTACH, precedence=3, message=mock_message('7'))
+    def temp_attach_and_replace(w_message):
+        w_message.flag = True
+    current_level.attach_and_replace = temp_attach_and_replace
+    
+    l.stack.append(mock_level(level_type=Levels.ATTACH, precedence=99, message=mock_message('stop')))
+    l.stack.append(current_level)
+    l.attach(message, [])
+    assert message.flag
+    
 def test_current_level_empty_stack():
     l = Levels(space, mock_message())
     l.stack = []
     assert l.current_level() is None
     
+def test_levels__check_attaching_attaching_is_none():
+    l = Levels(space, mock_message())
+    py.test.raises(IoException, 'l._check_attaching(None, mock_message())')
+    
+def test_levels__check_attaching_attaching_has_arguments():
+    l = Levels(space, mock_message())
+    a = mock_message(name='attaching', arguments=[1,2,3])
+    py.test.raises(IoException, 'l._check_attaching(a, mock_message())')
+    
+def test_levels_attaching_message_has_1_or_more_args():
+    l = Levels(space, mock_message())
+    a = mock_message(name='attaching')
+    m = mock_message(name='w_message', arguments=[1,2,3])
+    py.test.raises(IoException, 'l._check_attaching(a, m)')
+
 def test_levels__pop_down_to():
     l = Levels(space, mock_message())
     l.current_level_precedence = 99
@@ -58,7 +116,6 @@ def test_levels__pop_down_to():
     l.stack.append(mock_level(level_type=Levels.ARG, precedence=123))
     l.stack.append(mock_level(level_type=Levels.NEW, precedence=95))
     l.stack.append(mock_level(level_type=Levels.NEW, precedence=96))
-    print l.stack
     l._pop_down_to(97)
     assert l.current_level_precedence == 97
     assert len(l.stack) == 2
