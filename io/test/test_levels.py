@@ -83,7 +83,6 @@ def test_levels_attach_non_op():
         w_message.flag = True
     current_level.attach_and_replace = temp_attach_and_replace
     
-    l.stack.append(mock_level(level_type=Levels.ATTACH, precedence=99, message=mock_message('stop')))
     l.stack.append(current_level)
     l.attach(message, [])
     assert message.flag
