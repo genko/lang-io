@@ -18,9 +18,9 @@ def test_map_clone():
 def test_at_put():
     inp = 'Map clone atPut("foo", "bar")'
     res, space = interpret(inp)
-    keys = [(entry.key.value) for entry in res.items.values()]
+    keys = res.items.keys()
     assert keys == ['foo']
-    values = [(entry.value.value) for entry in res.items.values()]
+    values = [x.value for x in res.items.values()]
     assert values == ['bar']
     
 def test_at():
@@ -70,12 +70,12 @@ def test_size():
     res, space = interpret(inp)
     assert res.value == 2
     
-def test_remve_at():
+def test_remove_at():
     inp = 'Map clone atPut("1", "nil") atPut("2", "lorem") atPut("3", 3) atPut("4", 234) removeAt("2")'
     res, space = interpret(inp)
-    keys = [(entry.key.value) for entry in res.items.values()]
+    keys = res.items.keys()
     assert keys == ['1', '3', '4']
-    values = [(entry.value.value) for entry in res.items.values()]
+    values = [entry.value for entry in res.items.values()]
     assert values == ['nil', 3, 234]
     
 def test_has_value():
@@ -200,3 +200,29 @@ def test_map_with():
   res, space = interpret(inp)
   assert res.slots['a'].value == 1
   assert res.slots['b'].value == 2
+  
+  
+def test_map_raw_at():
+    inp = 'Map clone atPut("foo", "bar") atPut("lorem", "ipsum")'
+    res, space = interpret(inp)
+    assert res.at('foo').value == 'bar'
+    assert res.at('bar') is None
+    
+def test_map_raw_at_put():
+    inp = 'Map clone atPut("foo", "bar")'
+    res, space = interpret(inp)
+    res.at_put('lol', space.newsequence('hai'))
+    keys = res.items.keys()
+    assert keys == ['foo', 'lol']
+    values = [x.value for x in res.items.values()]
+    assert values == ['bar', 'hai']
+    
+def test_map_raw_has_hey():
+    inp = 'Map clone atPut("1", nil) atPut("2", "lorem")'
+    res, space = interpret(inp)
+    assert res.has_key('2') == True
+    
+    inp = 'Map clone atPut("1", nil) atPut("2", "lorem")'
+    res, space = interpret(inp)
+    assert res.has_key('99') == False
+    

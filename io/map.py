@@ -4,13 +4,16 @@ from io.model import W_ImmutableSequence, W_Number, W_List
 @register_method('Map', 'atPut', unwrap_spec=[object, object, object])
 def map_at_put(space, w_target, w_key, w_value):
     assert isinstance(w_key, W_ImmutableSequence)
-    w_target.at_put(w_key, w_value)
+    w_target.at_put(w_key.value, w_value)
     return w_target
     
 @register_method('Map', 'at', unwrap_spec=[object, object])
 def map_at(space, w_target, w_key):
     assert isinstance(w_key, W_ImmutableSequence)
-    return w_target.at(w_key)
+    t = w_target.at(w_key.value)
+    if t is None:
+        return space.w_nil
+    return t
     
 @register_method('Map', 'empty')
 def map_empty(space, w_target, w_message, w_context):
@@ -20,15 +23,16 @@ def map_empty(space, w_target, w_message, w_context):
 @register_method('Map', 'atIfAbsentPut', unwrap_spec=[object, object, object])
 def map_at_if_absent_put(space, w_target, w_key, w_value):
     assert isinstance(w_key, W_ImmutableSequence)
-    if w_target.has_key(w_key):
-        return w_target.at(w_key)
-    w_target.at_put(w_key, w_value)
+    key = w_key.value
+    if w_target.has_key(key):
+        return w_target.at(key)
+    w_target.at_put(key, w_value)
     return w_value
         
 @register_method('Map', 'hasKey', unwrap_spec=[object, object])
 def map_has_key(space, w_target, w_key):
     assert isinstance(w_key, W_ImmutableSequence)
-    if w_target.has_key(w_key):
+    if w_target.has_key(w_key.value):
         return space.w_true
     return space.w_false
     
@@ -39,7 +43,7 @@ def map_size(space, w_target, w_message, w_context):
 @register_method('Map', 'removeAt', unwrap_spec=[object, object])
 def map_has_key(space, w_target, w_key):
     assert isinstance(w_key, W_ImmutableSequence)
-    w_target.remove_at(w_key)
+    w_target.remove_at(w_key.value)
     return w_target
 
 @register_method('Map', 'hasValue', unwrap_spec=[object, object])

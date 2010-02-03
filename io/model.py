@@ -116,44 +116,45 @@ class W_Map(W_Object):
             h += key + val.hash()
         return h
     
-    def at(self, w_key):
-        h = w_key.hash()
-        if h in self.items:
-            return self.items[h].value
-        else:
-            return self.space.w_nil
+    def at(self, key):
+        assert isinstance(key, str)
+        return self.items.get(key)
     
-    def at_put(self, w_key, w_value):
-        self.items[w_key.hash()] = MapEntry(w_key, w_value)
+    def at_put(self, key, w_value):
+        assert isinstance(w_value, W_Object)
+        assert isinstance(key, str)
+        self.items[key] = w_value
         
     def empty(self):
         self.items.clear()
     
-    def has_key(self, w_key):
-        return w_key.hash() in self.items
+    def has_key(self, key):
+        assert isinstance(key, str)
+        return key in self.items
         
     def size(self):
         return len(self.items)
     
-    def remove_at(self, w_key):
+    def remove_at(self, key):
+        assert isinstance(key, str)
         try:
-            del(self.items[w_key.hash()])
+            del(self.items[key])
         except Exception, e:
             pass
             
     def has_value(self, w_value):
         for x in self.items.values():
-            if x.value == w_value:
+            if x == w_value:
                 return True
         return False
         
     def values(self):
-        return [x.value for x in self.items.values()]
+        return [x for x in self.items.values()]
         
     def foreach(self, space, key_name, value_name, w_body, w_context):
-        for item in self.items.values():
-            w_context.slots[key_name] = item.key
-            w_context.slots[value_name] = item.value
+        for key, item in self.items.iteritems():
+            w_context.slots[key_name] = space.newsequence(key)
+            w_context.slots[value_name] = item
             t = w_body.eval(space, w_context, w_context)
             if not space.is_normal_status():
                 if space.is_continue_status():
@@ -164,20 +165,12 @@ class W_Map(W_Object):
         return t 
         
     def keys(self):
-        return [x.key for x in self.items.values()]
+        return [self.space.newsequence(x) for x in self.items]
     
     def __repr__(self):
         """NOT RPYTHON"""
         return "<W_Map entries=%r>" % self.items.values()
         
-class MapEntry(object):
-    def __init__(self, w_key, w_value):
-        self.key = w_key
-        self.value = w_value
-    
-    def __repr__(self):
-        """NOT RPYTHON"""
-        return "(key: %r, value: %r )" % (self.key, self.value)
         
 class W_ImmutableSequence(W_Object):
     def __init__(self, space, string, protos=[]):
