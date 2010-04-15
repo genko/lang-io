@@ -14,7 +14,7 @@ def test_operator_shuffling1():
     assert res.name == "a"
     plus = res.next
     assert plus.name == "+"
-    assert plus.arguments[0].name.value == "b"
+    assert plus.arguments[0].name == "b"
 
 def test_operator_shuffling2():
     inp = 'a +(b)'
@@ -23,7 +23,7 @@ def test_operator_shuffling2():
     assert res.name == "a"
     plus = res.next
     assert plus.name == "+"
-    assert plus.arguments[0].name.value == "b"
+    assert plus.arguments[0].name == "b"
     
 def test_levels_attach_for_non_operator():
     inp = "a"

@@ -140,7 +140,7 @@ class Levels(object):
                 w_message.next = brackets
             self._pop_down_to(precedence)
             self._attach_to_top_and_push(w_message, precedence)
-        else:
+        elif self.current_level() is not None:
             self.current_level().attach_and_replace(w_message)
 
     def _check_attaching(self, attaching, w_message):
