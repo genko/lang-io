@@ -9,13 +9,13 @@ def test_map_asObject():
     assert res.slots['2'].value == 99
     assert res.slots['3'].value == 3
     assert res.slots['4'].value == 234
-    
+
 def test_map_asObject_clones_object_proto():
     inp = 'Map clone atPut("1", 12345) atPut("2", 99) atPut("3", 3) atPut("4", 234) asObject'
     res, space = interpret(inp)
     assert isinstance(res, W_Object)
     assert res.protos == [space.w_object]
-    
+
 def test_map_as_list():
     py.test.skip("Depends on ==")
     inp = 'Map clone atPut("1", 12345) atPut("2", 99) atPut("3", 3) atPut("4", 234) asList'
@@ -23,29 +23,29 @@ def test_map_as_list():
     assert isinstance(res, W_List)
     l = [(ll.items[0].value, ll.items[1].value) for ll in res.items]
     assert l == [('1', 12345), ('2', 99), ('3', 3), ('4', 234)]
-    
+
 def test_new_slot():
     inp = """timers ::= 1"""
     res, space = interpret(inp)
     assert space.w_lobby.slots['timers'].value == 1
     # assert isinstance(space.w_lobby.slots['setTimers'], W_Block)
-    
+
 def test_new_slot_complex():
-    inp = """a := Object clone 
+    inp = """a := Object clone
     a do(
         timers ::= 1
     )
     a setTimers(99)
     a timers"""
-    
+
     res, space = interpret(inp)
     assert res.value == 99
     a = space.w_lobby.slots['a']
     assert 'timers' in a.slots
     assert 'setTimers' in a.slots
     # assert isinstance(a.slots['setTimers'], W_Block)
-    
-    
+
+
 def test_new_slot_with_lookup():
     inp = """
     q := 99
@@ -71,7 +71,7 @@ def test_new_slot_with_var():
     """
     res,space = interpret(inp)
     assert res.value == 4
-    
+
 def test_new_slot_with_var2():
     inp = """
         p := 4

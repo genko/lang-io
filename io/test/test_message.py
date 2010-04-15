@@ -6,10 +6,10 @@ import py
 def test_message_protos():
     inp = "a := block(1)\na"
     res,space = interpret(inp)
-    
+
     assert res.body.protos == [space.w_message]
     assert space.w_message.protos == [space.w_object]
-    
+
 def test_message_arg_at():
     inp = 'a := message(foo(2,3,4)); a argAt(1)'
     res, space = interpret(inp)
@@ -21,7 +21,7 @@ def test_message_arguments():
   res, space = interpret(inp)
   assert isinstance(res, W_List)
   assert res[0].name == 'C'
-  assert res[0].next.name == 'D' 
+  assert res[0].next.name == 'D'
   assert res[1].name == 'E'
 
 def test_message_name():
@@ -45,7 +45,7 @@ def test_argsEvaluatedIn():
     res, space = interpret(inp)
     values = [x.value for x in res.items]
     assert values == [99]
-def test_argsEvaluatedIn2():    
+def test_argsEvaluatedIn2():
     inp = """
     Object do(
         m := method(call message argsEvaluatedIn(call sender))
@@ -59,14 +59,14 @@ def test_argsEvaluatedIn2():
     res, space = interpret(inp)
     values = [x.value for x in res.items]
     assert values == [1]
-    
+
 # def test_setIsActivatable():
 #     inp = "a := block(1);a setIsActivateable(true); a"
 #     res,space = interpret(inp)
-#     
+#
 #     assert res.value == 1
-#     
+#
 #     inp = "a := method(1);a setIsActivateable(false); a"
 #     res,space = interpret(inp)
-#     
+#
 #     assert isinstance(res, W_Block)

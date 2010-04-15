@@ -8,11 +8,11 @@ def test_object_do():
     res, space = interpret(inp)
     assert res.slots['a'].value == 23
     assert res.value == 4
-    
+
 def test_do_on_map():
     inp = """
     Map do(
-        get := method(i, 
+        get := method(i,
             self at(i)
         )
     )
@@ -20,13 +20,13 @@ def test_do_on_map():
     res, _ = interpret(inp)
     assert isinstance(res, W_Number)
     assert res.value == 234
-    
+
 def test_object_do_multiple_slots():
     inp = 'Object do(a := 23; b := method(a + 5); a := 1); Object b'
     res, space = interpret(inp)
     assert res.value == 6
     assert space.w_object.slots['a'].value == 1
-    
+
 def test_object_anon_slot():
     inp = 'Object getSlot("+")("foo")'
     res, space = interpret(inp)
@@ -36,17 +36,17 @@ def test_object_has_slot():
     inp = 'Object hasSlot("foo")'
     res, space = interpret(inp)
     assert res is space.w_false
-    
+
     inp2 = 'Object hasSlot("clone")'
     res, space = interpret(inp2)
     assert res is space.w_true
-        
+
 def test_object_question_mark_simple():
     inp = 'Object do(a := 1); Object ?a'
     res, space = interpret(inp)
     assert res is not space.w_nil
     assert res.value == 1
-    
+
     inp2 = 'Object ?a'
     res, space = interpret(inp2)
     assert res is space.w_nil
@@ -56,27 +56,27 @@ def test_object_message():
     res, space = interpret(inp)
     assert isinstance(res, W_Message)
     assert res.name == 'foo'
-    
+
 def test_object_substract():
     inp = '-1'
     res, space = interpret(inp)
     assert res.value == -1
-    
+
     inp = '-"a"'
     py.test.raises(Exception, "interpret(inp)")
-    
+
 def test_object_for():
    inp = """a:= list();
    for(x, 0, 10, 3, a append(x));
    a"""
    res, space = interpret(inp)
-   
+
    assert len(res.items) == 4
    results = [t.value for t in res.items]
    results == [0, 3, 6, 9]
-   
+
 def test_improved_object_for():
-    
+
     inp = """a:= list();
     x := 2
     y := 11
@@ -87,12 +87,12 @@ def test_improved_object_for():
     assert len(res.items) == 4
     results = [t.value for t in res.items]
     results == [0, 3, 6, 9]
-    
+
 def test_object_for_returns_nil():
     inp = """for(x, 1, 2, nil)"""
     res, space = interpret(inp)
     assert res == space.w_nil
-       
+
 def test_object_leaks():
     inp = """a:= list();
     for(x, 0, 10, 3, a append(x));
@@ -100,42 +100,42 @@ def test_object_leaks():
     res, _ = interpret(inp)
 
     assert res.value == 9
-    
+
 def test_object_append_proto():
     inp = """a := Object clone
     b := Object clone
     a appendProto(b)"""
     res, space = interpret(inp)
     assert res.protos == [space.w_object, space.w_lobby.slots['b']]
-    
+
 def test_object_doMessage():
     inp = """m := message(asNumber + 123)
     1 doMessage(m)"""
     res, space = interpret(inp)
-    
+
     assert res.value == 124
-    
-    
+
+
 def test_object_doMessage_optional_context():
     inp = """m := message(asNumber + 123)
     1 doMessage(m, 2)"""
     res, space = interpret(inp)
-    
+
     assert res.value == 125
-    
+
 def test_object_break():
     inp = """for(x, 7, 1000, break)
     x
     """
     res, _ = interpret(inp)
-    assert res.value == 7   
-    
+    assert res.value == 7
+
 def test_object_break_return_value():
     inp = """for(x, 7, 1000, break(-1))
     """
     res, _ = interpret(inp)
     assert res.value == -1
-    
+
 def test_object_continue():
     inp = """a := list()
     for(x, 1, 10, continue; a append(x))
@@ -143,26 +143,26 @@ def test_object_continue():
     res, space = interpret(inp)
     assert space.w_lobby.slots['x'].value == 10
     assert len(space.w_lobby.slots['a'].items) == 0
-    
+
 def test_object_return():
     inp = """x := method(y, return)
     x(99)"""
     res, space = interpret(inp)
     assert res == space.w_nil
 
-def test_object_return2():    
+def test_object_return2():
     inp = """x := method(y, return; 666)
     x(99)"""
     res, space = interpret(inp)
     assert res.value == 666
-    
+
 def test_object_return_value():
     inp = """x := method(y, return 42)
     x(99)"""
     res, space = interpret(inp)
     assert res.value == 42
 
-def test_object_return_value2():    
+def test_object_return_value2():
     inp = """x := method(y, return(1024); 666)
     x(99)"""
     res, space = interpret(inp)
@@ -170,7 +170,7 @@ def test_object_return_value2():
 
 def test_object_if():
     inp = """a := list()
-    for(i, 1, 10, 
+    for(i, 1, 10,
         if(i == 3, continue)
         a append(i))
     a
@@ -183,37 +183,37 @@ def test_object_if2():
     inp = """if(false, 1, 2)"""
     res, _ = interpret(inp)
     assert res.value == 2
-    
+
     inp = """if(true, 1, 2)"""
     res, _ = interpret(inp)
     assert res.value == 1
-    
+
 def test_object_if3():
     inp = 'if(true)'
     res, space = interpret(inp)
     assert res is space.w_true
-    
+
     inp = 'if(false)'
     res, space = interpret(inp)
     assert res is space.w_false
-    
+
 def test_object_stopStatus():
     inp = 'stopStatus'
     res, space = interpret(inp)
     assert res is space.w_normal
-    
+
     inp = 'stopStatus(break)'
     res, space = interpret(inp)
     assert res is space.w_break
-    
+
     inp = 'stopStatus(continue)'
     res, space = interpret(inp)
     assert res is space.w_continue
-    
+
     inp = 'stopStatus(return 42)'
     res, space = interpret(inp)
     assert res is space.w_return
-    
+
 def test_set_slot_with_type():
     inp = """a := Object clone
     setSlotWithType("foo", a)
@@ -222,7 +222,7 @@ def test_set_slot_with_type():
     assert isinstance(res.slots['type'], W_ImmutableSequence)
     assert res.slots['type'].value == 'foo'
     assert space.w_lobby.slots['foo'] == res
-    
+
 def test_doString():
     inp = """doString("1")"""
     res, space = interpret(inp)
@@ -255,7 +255,7 @@ def test_object_update_slot():
 def test_object_update_slot_raises():
     inp = 'qwer = 23'
     py.test.raises(Exception, 'interpret(inp)')
-    
+
 def test_object_write():
     inp = """
     p := Object clone do(

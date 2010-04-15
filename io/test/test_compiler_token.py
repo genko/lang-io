@@ -1,7 +1,7 @@
 from io.interpreter import interpret
 from io.model import W_Object, W_Number
 import py
-    
+
 def test_compiler_token_for_number_is_number():
     inp = 'Compiler tokensForString("1")'
     res, space = interpret(inp)
@@ -28,7 +28,7 @@ def test_compiler_token_open_paren():
     assert res.items[1].slots['type'].value == 'OpenParen'
     assert res.items[1].slots['name'].value == "("
     assert isinstance(res.items[1], W_Object)
-    
+
 def test_compiler_token_close_paren():
     inp = 'Compiler tokensForString("()")'
     res, space = interpret(inp)
@@ -109,7 +109,7 @@ def test_compiler_parse_paren_produces_curlyBrackets_message():
     assert res.items[0].slots['type'].value == 'Identifier'
     assert res.items[0].slots['name'].value == "curlyBrackets"
     assert isinstance(res.items[0], W_Object)
-    
+
 def test_compiler_identifier_token():
     inp = 'Compiler tokensForString("foo")'
     res, space = interpret(inp)
@@ -138,7 +138,7 @@ def test_compiler_terminator_token():
     assert res.items[0].slots['type'].value == 'Terminator'
     assert res.items[0].slots['name'].value == ";"
     assert isinstance(res.items[0], W_Object)
-    
+
 def test_compiler_comma_token():
     inp = 'Compiler tokensForString("(1,2)")'
     res, space = interpret(inp)
