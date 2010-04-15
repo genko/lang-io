@@ -224,7 +224,10 @@ class W_Message(W_Object):
     def eval(self, space, w_receiver, w_context):
         if self.name == ';':
             # xxx is this correct?
-            w_result = w_context
+            if self.next is not None:
+              w_result = w_context
+            else:
+              w_result = w_receiver
         elif self.cached_result is not None:
             w_result = self.cached_result
         else:
