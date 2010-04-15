@@ -1,4 +1,4 @@
-from io.parserhack import interpret
+from io.interpreter import interpret
 from io.model import W_Message, W_Block, W_List, W_ImmutableSequence
 import py
 

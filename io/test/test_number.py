@@ -1,4 +1,4 @@
-from io.parserhack import interpret
+from io.interpreter import interpret
 from io.model import W_Number
 import sys
 if sys.version_info < (2, 6):

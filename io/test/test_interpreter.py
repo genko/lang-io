@@ -1,4 +1,4 @@
-from io.parserhack import interpret
+from io.interpreter import interpret
 from io.model import W_Number
 def test_even_simpler():
     x, _ = interpret("2")

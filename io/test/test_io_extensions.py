@@ -1,4 +1,4 @@
-from io.parserhack import interpret
+from io.interpreter import interpret
 import py
 from io.model import W_Object, W_List, W_Block
 

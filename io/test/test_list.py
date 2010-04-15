@@ -1,4 +1,4 @@
-from io.parserhack import parse, interpret
+from io.interpreter import parse, interpret
 from io.model import W_List, W_Number
 import py.test
 
