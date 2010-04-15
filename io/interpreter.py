@@ -23,7 +23,7 @@ def parse_file(filename, space=None):
 def extract_name(input):
     re.match(input, '\"(\\"|[^"])+\"')
 def load_io_files(space):
-    files = glob.glob('io/*.io')
+    files = glob.glob('io/io/*.io')
     for f in files:
         parse_file(f, space).eval(space, space.w_lobby, space.w_lobby)
 
