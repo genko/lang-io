@@ -83,7 +83,7 @@ class Levels(object):
             attaching = current_level.message
             self._check_attaching(attaching, w_message)
             # a := b ;
-            copy_of_message = io.model.W_Message(self.space, "%s" % attaching.name, [])
+            copy_of_message = io.model.W_Message(self.space, '"%s"' % attaching.name, [])
             # copy_of_message.update_source_location(attaching)
             # a := b ;  ->  a("a") := b ;
             attaching.arguments.append(copy_of_message)
@@ -99,7 +99,7 @@ class Levels(object):
                     attaching.arguments.append(arg)
                 else:
                     # ()
-                    foo = W_Message(self.space, '', [])
+                    foo = io.model.W_Message(self.space, '', [])
                     # XXX IoMessage_rawCopySourceLocation(foo, attaching);
                     # ()  ->  (b c)
                     foo.arguments.append(arg)
@@ -133,7 +133,7 @@ class Levels(object):
                 last.next = None
 
             # make sure b in 1 := b gets executed
-            attaching.literal_value = None
+            attaching.cached_result = None
         elif w_message.name == ';':
             # print "message name is ;"
             self._pop_down_to(Levels.IO_OP_MAX_LEVEL-1, expressions)
@@ -181,13 +181,13 @@ class Levels(object):
         # print self.stack
 
     def _name_for_assign_operator(self, operator, slot):
-        value = self.assign_operator_table.at(operator.name)
-        if value is not self.space.w_nil and isinstance(value,
+        name = self.assign_operator_table.at(operator.name)
+        if name is not self.space.w_nil and isinstance(name,
                                                 io.model.W_ImmutableSequence):
             if operator.name == ":=" and slot.name[0].isupper():
-                return self.space.newsequence("setSlotWithType")
+                return "setSlotWithType"
             else:
-                return value
+                return name.value
         else:
             raise IoException("compile error: Value for '%s' in Message \
                     OperatorTable assignOperators is not a symbol. Values in \
