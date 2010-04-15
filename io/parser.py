@@ -33,8 +33,8 @@ Number = group(Floatnumber, Decnumber)
 Hexnumber = r'0[xX][0-9a-fA-F]*'
 
 # Comments and Whitespace, the ignored stuff
-Whitespace = r'[ \f\t]*'
-slashStarComment = r'/\*[^*/]*\*/'
+Whitespace = r'[ \f\t\r]*'
+slashStarComment = r'(/\*([^\*]|\*[^/])*\*?\*/)'
 slashSlashComment = r'//[^\n]*\n'
 poundComment = r'#[^\n]*\n'
 Comment = group(slashStarComment, slashSlashComment, poundComment)
@@ -54,9 +54,11 @@ Terminator = r'([\n;]'+maybe(Whitespace)+')+'
 Comma = r'\,'
 
 
-rexs = [Identifiers, Whitespace, Number, Hexnumber, Terminator, OpenParen, CloseParen, MonoQuote, TriQuote, Comment, Comma]
-names = ["Identifier", "Whitespace", "Number", "HexNumber", "Terminator",
-         "OpenParen", "CloseParen", "MonoQuote", "TriQuote", "Comment", "Comma"]
+rexs = [Whitespace, Comment, Identifiers, Number, Hexnumber, Terminator,
+        OpenParen, CloseParen, MonoQuote, TriQuote,  Comma]
+names = ["Whitespace", "Comment", "Identifier", "Number", "HexNumber",
+        "Terminator", "OpenParen", "CloseParen", "MonoQuote", "TriQuote",
+        "Comma"]
 ignores = ['Whitespace', 'Comment']
 
 
@@ -99,7 +101,9 @@ class IoLexer(object):
         return tokens
         
 def parse(space, string):
-    return IoParser(string, space).parse()
+    r = IoParser(string, space).parse()
+    r.shuffle()
+    return r
     
 class IoParser(object):
     def __init__(self, code, space):
@@ -117,6 +121,8 @@ class IoParser(object):
         if len(self.tokens) == 0:
             return W_Message(self.space, 'nil', [])
         token = self.tokens.pop(0)
+        if token.name == 'Comment':
+            raise 'Found comment', token
         # method = getattr(self, "parse_" + token.name.lower())
         arguments = self.parse_arguments()
         message = self.parse_token(token, arguments)
