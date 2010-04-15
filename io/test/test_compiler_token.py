@@ -147,16 +147,16 @@ def test_compiler_comma_token():
     assert res.items[3].slots['name'].value == ","
     assert isinstance(res.items[3], W_Object)
 
+@py.test.mark.xfail
 def test_compiler_triquote_token():
-    py.test.skip('Problem in the parserhack')
     inp = 'Compiler tokensForString("\"\"\"asdf\"\"\"")'
     res, space = interpret(inp)
     assert res.items[0].slots['type'].value == 'TriQuote'
     assert res.items[0].slots['name'].value == "\"\"\"asdf\"\"\""
     assert isinstance(res.items[0], W_Object)
 
+@py.test.mark.xfail
 def test_compiler_monoquote_token():
-    py.test.skip('Problem in the parserhack')
     inp = 'Compiler tokensForString("\\\"lorem\\\"")'
     res, space = interpret(inp)
     assert res.items[0].slots['name'].value == "\"lorem\""
