@@ -206,7 +206,7 @@ class W_CFunction(W_Object):
 class W_Message(W_Object):
     def __init__(self, space, name, arguments, next = None):
         self.name = name
-        self.literal_value = parse_literal(space, name)
+        self.cached_result = parse_literal(space, name)
         self.arguments = arguments
         self.next = next
         W_Object.__init__(self, space, [space.w_message])
@@ -225,8 +225,8 @@ class W_Message(W_Object):
         if self.name == ';':
             # xxx is this correct?
             w_result = w_context
-        elif self.literal_value is not None:
-            w_result = self.literal_value
+        elif self.cached_result is not None:
+            w_result = self.cached_result
         else:
             w_method = w_receiver.lookup(self.name)
             assert w_method is not None, 'Method "%s" not found in "%s"' % (self.name, w_receiver.__class__)
