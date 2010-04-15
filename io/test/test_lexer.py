@@ -187,3 +187,7 @@ def test_lex_comma_token():
     inp = '(1, 2)'
     tokens = iolexer.tokenize(inp)
     assert tokens[3] == Token('Comma', ',', SourcePos(2, 0, 2))
+    
+def test_lex_error():
+    inp = 'argAt(0))'
+    iolexer.tokenize(inp)

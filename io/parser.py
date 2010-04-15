@@ -22,7 +22,7 @@ Operators = r'(\:|\.|\'|\~|!|@|\$|%|\^|&|\*|\-|\+|/|=|\||\\|\<|\>|\?)+'
 Identifiers = group(Names, Operators)
 
 # Numbers
-Decnumber = r'[1-9][0-9]*'
+Decnumber = r'([1-9][0-9]*)|0+'
 Exponent = r'[eE][\-\+]?[0-9]+'
 Pointfloat = group(r'[0-9]+\.[0-9]*', r'\.[0-9]+') + maybe(Exponent)
 Expfloat = r'[0-9]+' + Exponent
