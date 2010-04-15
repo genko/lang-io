@@ -249,7 +249,6 @@ class W_Message(W_Object):
       while len(expressions) >= 1:
         # shift operation
         n, expressions = expressions[0], expressions[1:]
-        print "MESSAGE %s" % n.name
         while n is not None:
           levels.attach(n, expressions)
           expressions += n.arguments

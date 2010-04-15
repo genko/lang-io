@@ -17,7 +17,6 @@ def parse_file(filename, space=None):
     f = file(filename)
     code = f.read()
     f.close()
-    # import pdb; pdb.set_trace()
     return parse(space, code)
 
 
