@@ -66,6 +66,7 @@ def test_coro_result_last_value():
     assert res.slots['result'].value == 99
 
 def test_coro_parent_resume_switch():
+    py.test.skip()
     inp = """
     back := currentCoro
     p := Coroutine currentCoroutine clone do(
@@ -123,6 +124,7 @@ def test_scheduler_current_coro():
     assert res.items[0] is res.items[1]
 
 def test_coroutine_corofor():
+    py.test.skip()
     inp = """
     a := 4 clone
     a coroFor(message(99))"""
