@@ -120,7 +120,6 @@ def test_compiler_identifier_token():
     assert isinstance(res.items[0], W_Object)
 
 def test_compiler_terminator_token_for_newline():
-    py.test.skip("Parserhack related")
     inp = """Compiler tokensForString("\n")"""
     res, space = interpret(inp)
     # assert res.items[0].slots['character'].value == 1
