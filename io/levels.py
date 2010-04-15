@@ -28,9 +28,9 @@ class Levels(object):
     
     def _create_assign_operator_table(self):
         ass_op_table = self.space.w_map.clone()
-        ass_op_table.at_put(self.space.newsequence(':='), self.space.newsequence('setSlot'))
-        ass_op_table.at_put(self.space.newsequence('='), self.space.newsequence('updateSlot'))
-        ass_op_table.at_put(self.space.newsequence('::='), self.space.newsequence('newSlot'))
+        ass_op_table.at_put(':=', self.space.newsequence('setSlot'))
+        ass_op_table.at_put('=', self.space.newsequence('updateSlot'))
+        ass_op_table.at_put('::=', self.space.newsequence('newSlot'))
         return ass_op_table
    
     def _create_operator_table(self):
@@ -43,8 +43,7 @@ class Levels(object):
         "return": 14}
         op_table = self.space.w_map.clone()
         for key in table:
-            op_table.at_put(self.space.newsequence(key),
-                            io.model.W_Number(self.space, table[key]))
+            op_table.at_put(key, io.model.W_Number(self.space, table[key]))
         return op_table
    
     def _get_op_table(self, operator_table, slot_name, callback):
@@ -171,12 +170,10 @@ class Levels(object):
         print self.stack
 
     def _name_for_assign_operator(self, operator, slot):
-        operator_name = operator.name
-        value = self.assign_operator_table.at(
-                                        self.space.newsequence(operator_name))
+        value = self.assign_operator_table.at(operator.name)
         if value is not self.space.w_nil and isinstance(value, 
                                                 io.model.W_ImmutableSequence):
-            if operator_name == ":=" and slot.name[0].isupper():
+            if operator.name == ":=" and slot.name[0].isupper():
                 return self.space.newsequence("setSlotWithType")
             else:
                 return value
@@ -184,7 +181,7 @@ class Levels(object):
             raise IoException("compile error: Value for '%s' in Message \
                     OperatorTable assignOperators is not a symbol. Values in \
                     the OperatorTable assignOperators are symbols which are \
-                    the name of the operator." % operator_name)
+                    the name of the operator." % operator.name)
 
     def _pop_down_to(self, target_level):
         level = self.current_level() 
@@ -195,15 +192,13 @@ class Levels(object):
     		level = self.current_level() 
     
     def _is_assign_operator(self, w_message):
-        message_name = self.space.newsequence(w_message.name)
-        return self.assign_operator_table.has_key(message_name)
+        return self.assign_operator_table.has_key(w_message.name)
         
     def _level_for_op(self, w_message):
-        message_name = self.space.newsequence(w_message.name)
-        if not self.operator_table.has_key(message_name):
+        if not self.operator_table.has_key(w_message.name):
             print "%s not found in the operator_table slots" % w_message.name
             return -1
-        operator = self.operator_table.at(message_name)
+        operator = self.operator_table.at(w_message.name)
         if type(operator) == io.model.W_Number:
             value = operator.value
             if value < 0 or value >= Levels.IO_OP_MAX_LEVEL:

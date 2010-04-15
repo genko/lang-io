@@ -138,13 +138,13 @@ def test_levels__level_for_op_with_non_op():
 def test_levels__level_for_op_with_negative_precedence():
     m = mock_message(name='+')
     levels = Levels(space, m)
-    levels.operator_table.at_put(space.newsequence('+'), W_Number(space, -123))
+    levels.operator_table.at_put('+', W_Number(space, -123))
     py.test.raises(IoException, 'levels._level_for_op(m)')
 
 def test_levels_next_message_for_op_with_nonnumeric_precedence():
     m = mock_message(name='+')
     levels = Levels(space, m)
-    levels.operator_table.at_put(space.newsequence('+'), space.w_object.clone())
+    levels.operator_table.at_put('+', space.w_object.clone())
     py.test.raises(IoException, 'levels._level_for_op(m)')
     
 def test_levels_next_message():
