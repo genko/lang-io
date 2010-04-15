@@ -113,6 +113,7 @@ class ObjSpace(object):
         self.w_core.slots['Sequence'] = self.w_sequence
         self.w_core.slots['ImmutableSequence'] = self.w_immutable_sequence
         self.w_core.slots['Compiler'] = self.w_compiler
+        self.w_core.slots['OperatorTable'] = self.w_object.clone()
 
     def init_w_number(self):
         self.w_number = instantiate(W_Number)
