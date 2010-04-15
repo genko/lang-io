@@ -81,3 +81,26 @@ def test_shuffle_method_body():
     )"""
     res = parse(space, inp)
     print res
+
+def test_assign_operator_shuffling():
+    inp = "a  = b"
+    res = parse(space, inp)
+    res.shuffle()
+    assert res.name == 'updateSlot'
+    assert len(res.arguments) == 2
+    assert res.next == None
+
+def test_assign_operator_shuffling2():
+    inp = 'a := b'
+    res = parse(space, inp)
+    res.shuffle()
+    assert res.name == 'setSlot'
+    assert len(res.arguments) == 2
+    assert res.next == None
+
+def test_assign_operator_shuffling3():
+    inp = 'a ::= b'
+    res = parse(space, inp)
+    res.shuffle()
+    assert res.name == 'newSlot'
+    assert len(res.arguments) == 2

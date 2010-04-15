@@ -170,9 +170,8 @@ def object_stopstatus(space, w_target, w_message, w_context):
 
 @register_method('Object', 'doString', unwrap_spec=[object, str])
 def object_do_string(space, w_target, code):
-    # XXX Replace this when the actual parser is done
     from parser import parse
-    ast = parse(code, space)
+    ast = parse(space, code)
     return ast.eval(space, w_target, w_target)
 
 
