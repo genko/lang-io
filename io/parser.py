@@ -15,7 +15,7 @@ def any(*choices):
 def maybe(*choices):
     return group(*choices) + '?'
 
-# io token definitions 
+# io token definitions
 # Identifiers
 Names = r'[a-zA-Z_][a-zA-Z0-9_]*'
 Operators = r'(\:|\.|\'|\~|!|@|\$|%|\^|&|\*|\-|\+|/|=|\||\\|\<|\>|\?)+'
@@ -64,17 +64,17 @@ ignores = ['Whitespace', 'Comment']
 
 def get_lexer():
     return IoLexer()
-    
+
 class IoLexer(object):
     def __init__(self):
         super(IoLexer, self).__init__()
         self.lexer = Lexer([parse_regex(r) for r in rexs], names, ignores)
-    
+
     def tokenize(self, input):
         tokens = self.lexer.tokenize(input)
         self._magic_tokenize(tokens)
         return tokens
-    
+
     def _magic_tokenize(self, tokens):
         i = -1
         while(i < len(tokens)-1):
@@ -91,20 +91,20 @@ class IoLexer(object):
                 token_to_add = 'curlyBrackets'
             else:
                 continue
-                
+
             tokens.insert(i, Token('Identifier', token_to_add,
                             SourcePos(tokens[i].source_pos.i,
                              tokens[i].source_pos.lineno,
                               tokens[i].source_pos.columnno)))
             i += 1
-            
+
         return tokens
-        
+
 def parse(space, string):
     r = IoParser(string, space).parse()
     r.shuffle()
     return r
-    
+
 class IoParser(object):
     def __init__(self, code, space):
         super(IoParser, self).__init__()
@@ -115,7 +115,7 @@ class IoParser(object):
             self.tokens.pop(0)
         if len(self.tokens) > 0 and  self.tokens[-1].name == 'Terminator':
             self.tokens.pop()
-        
+
 
     def parse(self):
         if len(self.tokens) == 0:
@@ -128,30 +128,30 @@ class IoParser(object):
         message = self.parse_token(token, arguments)
         message.next = self.parse_next()
         return message
-        
+
     def parse_next(self):
         if len(self.tokens) > 0 and self.tokens[0].name not in ['Comma', 'OpenParen', 'CloseParen']:
             return self.parse()
         else:
             return None
-            
+
     def parse_arguments(self):
         if len(self.tokens) > 0 and self.tokens[0].name == 'OpenParen':
             arguments = []
             t = self.tokens.pop(0)
             assert t.name == 'OpenParen'
-        
+
             while self.tokens[0].name != 'CloseParen':
                 if self.tokens[0].name == 'Comma':
                     self.tokens.pop(0)
                 arguments.append(self.parse())
-        
+
             t = self.tokens.pop(0)
             assert t.name == 'CloseParen'
         else:
             arguments = []
         return arguments
-        
+
     def parse_token(self, token, args=[]):
         m = W_Message(self.space, token.source, args)
         if token.name != 'Identifier':

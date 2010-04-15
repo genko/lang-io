@@ -24,7 +24,7 @@ def test_operator_shuffling2():
     plus = res.next
     assert plus.name == "+"
     assert plus.arguments[0].name == "b"
-    
+
 def test_levels_attach_for_non_operator():
     inp = "a"
     res = parse(space, inp)
@@ -33,7 +33,7 @@ def test_levels_attach_for_non_operator():
     assert l.current_level().message == res
     assert l.current_level().type == Levels.ATTACH
     assert l.current_level().precedence == Levels.IO_OP_MAX_LEVEL
-    
+
 def test_levels_stack_on_init_has_one_level():
     l = Levels(space, W_Message(space, "nil", []))
     assert len(l.stack) == 1

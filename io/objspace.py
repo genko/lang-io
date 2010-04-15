@@ -37,65 +37,65 @@ class ObjSpace(object):
         self.w_continue = W_Object(self, [self.w_object])
         self.w_return = W_Object(self, [self.w_object])
         self.w_eol = W_Object(self, [self.w_object])
-        
+
         # XXX TODO: change this when Sequence is implemented
         self.w_sequence = W_ImmutableSequence(self, '',[self.w_object])
         self.w_immutable_sequence = W_ImmutableSequence(self, '', [self.w_sequence])
         # default stop state
         self.stop_status = self.w_normal
         self.w_return_value = self.w_nil
-        
-        self.init_w_object()        
-        
+
+        self.init_w_object()
+
         self.init_w_protos()
-        
+
         self.init_w_list()
 
         self.init_w_message()
 
         self.w_block = W_Block(self, [], W_Message(self, 'nil', []), False, [self.w_object])
         self.init_w_block()
-        
+
         self.init_w_lobby()
-        
+
         self.init_w_number()
-        
+
         self.init_w_core()
-        
+
         self.init_w_call()
-         
+
         self.init_w_map()
 
         self.init_w_coroutine()
-        
+
         self.init_w_flow_objects()
-        
+
         self.init_w_sequence()
-        
+
         self.init_stored_messages()
 
         self.init_w_compiler()
-        
+
     def init_w_map(self):
         for key, function in cfunction_definitions['Map'].items():
             self.w_map.slots[key] = W_CFunction(self, function)
-            
+
     def init_w_call(self):
         for key, function in cfunction_definitions['Call'].items():
             self.w_call.slots[key] = W_CFunction(self, function)
-            
+
     def init_w_protos(self):
         self.w_protos.protos.append(self.w_core)
         self.w_protos.slots['Core'] = self.w_core
-        
+
     def init_w_block(self):
         for key, function in cfunction_definitions['Block'].items():
             self.w_block.slots[key] = W_CFunction(self, function)
-    
+
     def init_w_list(self):
         for key, function in cfunction_definitions['List'].items():
             self.w_list.slots[key] = W_CFunction(self, function)
-            
+
     def init_w_core(self):
         self.w_core.protos.append(self.w_object)
         self.w_core.slots['Locals'] = self.w_locals
@@ -117,16 +117,16 @@ class ObjSpace(object):
 
     def init_w_number(self):
         self.w_number = instantiate(W_Number)
-        W_Object.__init__(self.w_number, self)   
-        self.w_number.protos = [self.w_object]     
+        W_Object.__init__(self.w_number, self)
+        self.w_number.protos = [self.w_object]
         self.w_number.value = 0
         for key, function in cfunction_definitions['Number'].items():
             self.w_number.slots[key] = W_CFunction(self, function)
-            
+
     def init_w_message(self):
         self.w_message = instantiate(W_Message)
-        W_Object.__init__(self.w_message, self)   
-        self.w_message.protos = [self.w_object]     
+        W_Object.__init__(self.w_message, self)
+        self.w_message.protos = [self.w_object]
         self.w_message.name = "Unnamed"
         for key, function in cfunction_definitions['Message'].items():
             self.w_message.slots[key] = W_CFunction(self, function)
@@ -140,12 +140,12 @@ class ObjSpace(object):
     def init_w_object(self):
         for key, function in cfunction_definitions['Object'].items():
             self.w_object.slots[key] = W_CFunction(self, function)
-            
+
     def init_w_flow_objects(self):
         # Flow control: Normal
         self.w_core.slots['Normal'] = self.w_normal
         self.w_core.slots['Normal'].slots['type'] = W_ImmutableSequence(self, 'Normal')
-    	
+
     	# Flow control: Break
     	self.w_core.slots['Break'] = self.w_break
         self.w_core.slots['Break'].slots['type'] = W_ImmutableSequence(self, 'Break')
@@ -161,7 +161,7 @@ class ObjSpace(object):
     	# Flow control: Eol
     	self.w_core.slots['Eol'] = self.w_eol
         self.w_core.slots['Eol'].slots['type'] = W_ImmutableSequence(self, 'Eol')
-        
+
     def init_w_compiler(self):
         self.w_compiler.slots['type'] = W_ImmutableSequence(self, 'Compiler')
         for key, function in cfunction_definitions['Compiler'].items():
@@ -170,41 +170,41 @@ class ObjSpace(object):
     def init_w_coroutine(self):
         for key, function in cfunction_definitions['Coroutine'].items():
             self.w_coroutine.slots[key] = W_CFunction(self, function)
-        
+
     def init_w_sequence(self):
         for key, function in cfunction_definitions['Sequence'].items():
             self.w_sequence.slots[key] = W_CFunction(self, function)
-            
+
     def break_status(self, result):
         self.stop_status = self.w_break
         self.w_return_value = result
-        
+
     def normal_status(self):
         self.stop_status = self.w_normal
         self.w_return_value = self.w_nil
-        
+
     def is_normal_status(self):
         return self.stop_status == self.w_normal
-        
+
     def continue_status(self):
         self.stop_status = self.w_continue
 
     def is_continue_status(self):
-        return self.stop_status == self.w_continue    
+        return self.stop_status == self.w_continue
 
     def return_status(self, result):
         self.stop_status = self.w_return
         self.w_return_value = result
-        
+
     def newbool(self, value):
         if value:
             return self.w_true
         return self.w_false
-    
+
     def newsequence(self, value):
         return self.w_immutable_sequence.clone_and_init(value)
     def isnil(self, w_object):
         return w_object is self.w_nil
-        
+
     def init_stored_messages(self):
         self.w_print_message = W_Message(self, 'print', [])

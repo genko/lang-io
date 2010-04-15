@@ -8,7 +8,7 @@ def test_isCurrent():
     inp = """Coroutine currentCoroutine isCurrent"""
     result, space = interpret(inp)
     assert result is space.w_true
-    
+
 def test_setRunMessage():
     inp = """m := message(1023)
     c := Coroutine currentCoroutine
@@ -17,7 +17,7 @@ def test_setRunMessage():
     res, space = interpret(inp)
     assert isinstance(res, W_Coroutine)
     assert res.slots['runMessage'] is space.w_lobby.slots['m']
-    
+
 def test_run():
     inp = """a := 12
     c := Coroutine currentCoroutine
@@ -33,7 +33,7 @@ def test_result_slot_proto():
     inp = """Coroutine result"""
     res, space = interpret(inp)
     assert res == space.w_nil
-    
+
 def test_set_result():
     inp = """
     c := Coroutine currentCoroutine clone
@@ -41,12 +41,12 @@ def test_set_result():
     res, space = interpret(inp)
     assert isinstance(res, W_Coroutine)
     assert res.slots['result'].value == 99
-    
+
 def test_parentCoroutine_proto():
     inp = 'Coroutine parentCoroutine'
     res, space = interpret(inp)
     assert res is space.w_nil
-    
+
 def test_parentCoroutine():
     inp = """
     Object try(Lobby foo := Coroutine currentCoroutine)
@@ -55,7 +55,7 @@ def test_parentCoroutine():
     res, space = interpret(inp)
     assert isinstance(res, W_Coroutine)
     assert res is space.w_lobby.slots['foo'].slots['parentCoroutine']
-    
+
 def test_coro_result_last_value():
     inp = """
     c := Coroutine currentCoroutine clone
@@ -64,7 +64,7 @@ def test_coro_result_last_value():
     c"""
     res, space = interpret(inp)
     assert res.slots['result'].value == 99
-    
+
 def test_coro_parent_resume_switch():
     inp = """
     back := currentCoro
@@ -78,8 +78,8 @@ def test_coro_parent_resume_switch():
       )
     )
     b := message(
-      Coroutine currentCoroutine setResult(23); 
-      Coroutine currentCoroutine parentCoroutine run; 
+      Coroutine currentCoroutine setResult(23);
+      Coroutine currentCoroutine parentCoroutine run;
       24
     )
     a := Coroutine currentCoroutine clone do(
@@ -89,10 +89,10 @@ def test_coro_parent_resume_switch():
     a setRunMessage(b) run
     """
     res,space = interpret(inp)
-    
+
     assert space.w_lobby.slots['a'].slots['result'].value == 23
     assert space.w_lobby.slots['p'].slots['result'].value == 99
-    
+
 def test_coro_resume2():
     inp = """
     a := Coroutine currentCoroutine clone
@@ -106,22 +106,22 @@ def test_coro_resume2():
     res, space = interpret(inp)
     assert res.value == 4
     assert space.w_lobby.slots['b'].slots['result'].value == 5
-    
+
 def test_coro_stacksize():
     inp = 'Coroutine clone stackSize'
     res, space = interpret(inp)
     assert res.value == 128000*10
-    
+
 def test_coro_clone():
     inp = 'Coroutine clone'
     res, space = interpret(inp)
     assert isinstance(res, W_Coroutine)
-    
+
 def test_scheduler_current_coro():
     inp = """list(Scheduler currentCoroutine, Coroutine currentCoroutine)"""
     res, space = interpret(inp)
     assert res.items[0] is res.items[1]
-    
+
 def test_coroutine_corofor():
     inp = """
     a := 4 clone
@@ -143,12 +143,12 @@ def test_xxx0():
     )
     a setParentCoroutine(p)
     a setRunMessage(message(23))
-    a run; 
+    a run;
     """
     res,space = interpret(inp)
     assert space.w_lobby.slots['a'].slots['result'].value == 23
     assert space.w_lobby.slots['p'].slots['result'].value == 99
-    
+
 
 def test_lookup_problem1():
     inp = """
@@ -165,7 +165,7 @@ def test_lookup_problem1():
     res,space = interpret(inp)
     print res
     assert res.value == 4
-    
+
 def test_lookup_problem2():
     inp = """
     p := 4
@@ -182,8 +182,8 @@ def test_lookup_problem2():
     """
     res,space = interpret(inp)
     assert res.value == 4
-    
-    
+
+
 def test_lookup_problem3():
     inp = """
     result ::= 99

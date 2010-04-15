@@ -40,10 +40,10 @@ class MessageParser(object):
             self.next()
         self.next()
         return ''.join(name)
-        
+
     def next(self):
         self.position += 1
-        
+
     def parse_arguments(self):
         arguments = []
         assert self._char() == '['
@@ -53,7 +53,7 @@ class MessageParser(object):
             self.next()
             assert self._char() == ','
             self.next()
-            
+
         assert self._char() == ']'
         self.next()
         return arguments
@@ -73,26 +73,26 @@ def interpret(code):
     load_io_files(space)
     ast = parse(code, space)
     return ast.eval(space, space.w_lobby, space.w_lobby), space
-    
+
 def parse_file(filename, space=None):
     f = file(filename)
     code = f.read()
     f.close()
     return parse(code, space)
 
-    
+
 def extract_name(input):
     re.match(input, '\"(\\"|[^"])+\"')
 def load_io_files(space):
     files = glob.glob('io/*.io')
     for f in files:
         parse_file(f, space).eval(space, space.w_lobby, space.w_lobby)
-    
-    
+
+
 if __name__ == '__main__':
     import sys
     space = ObjSpace()
     # print parse(py.path.local(sys.argv[1]).read(), space)
     print parse(sys.argv[1], space)
-    
-    
+
+
