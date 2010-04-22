@@ -213,7 +213,9 @@ class W_Message(W_Object):
 
     def __repr__(self):
         """NOT RPYTHON"""
-        return "Message(%r, %r, %r)" % (self.name, self.arguments, self.next)
+        a = getattr(self, 'arguments', None)
+        n = getattr(self, 'next', None)
+        return "Message(%r, %r, %r)" % (self.name, a, n)
 
     def hash(self):
         h = hash(self.name)
