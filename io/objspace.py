@@ -17,6 +17,8 @@ import io.compiler
 class ObjSpace(object):
     """docstring for ObjSpace"""
     def __init__(self):
+        self._coroutine_state = None
+
         self.w_object = W_Object(self)
 
         self.w_lobby = W_Object(self)
@@ -53,12 +55,13 @@ class ObjSpace(object):
 
         self.init_w_message()
 
+        # XXX This must be before W_Block now, why?
+        self.init_w_number()
+
         self.w_block = W_Block(self, [], W_Message(self, 'nil', []), False, [self.w_object])
         self.init_w_block()
 
         self.init_w_lobby()
-
-        self.init_w_number()
 
         self.init_w_core()
 
@@ -119,7 +122,7 @@ class ObjSpace(object):
         self.w_number = instantiate(W_Number)
         W_Object.__init__(self.w_number, self)
         self.w_number.protos = [self.w_object]
-        self.w_number.value = 0
+        self.w_number.number_value = 0
         for key, function in cfunction_definitions['Number'].items():
             self.w_number.slots[key] = W_CFunction(self, function)
 

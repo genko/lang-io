@@ -11,7 +11,7 @@ def test_message_arg_at():
 def test_call_evalArgAt():
     inp = """t := 99; a := method(x, y, z, call); a(1,t,3) evalArgAt(1)"""
     res, space = interpret(inp)
-    assert res.value == 99
+    assert res.number_value == 99
 
 def test_call_sender():
     inp = """foo := Object clone

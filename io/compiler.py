@@ -8,7 +8,7 @@ def compiler_tokens_for_string(space, w_target, w_message, w_context):
     for token in get_lexer().tokenize(input):
         t = W_Object(space)
         if token.source in ['[', '{'] and len(io_tokens) > 0:
-            io_tokens[-1].slots['character'].value = token.source_pos.columnno
+            io_tokens[-1].slots['character'].number_value = token.source_pos.columnno
         t.slots['character'] = W_Number(space, len(token.source) + token.source_pos.columnno)
         t.slots['line'] = W_Number(space, token.source_pos.lineno + 1)
         t.slots['type'] = space.w_sequence.clone_and_init(token.name)

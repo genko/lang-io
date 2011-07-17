@@ -26,8 +26,8 @@ def test_run():
     """
     res, space = interpret(inp)
     assert isinstance(res, W_Coroutine)
-    assert res.slots['result'].value == 13
-    assert space.w_lobby.slots['a'].value == 12
+    assert res.slots['result'].number_value == 13
+    assert space.w_lobby.slots['a'].number_value == 12
 
 def test_result_slot_proto():
     inp = """Coroutine result"""
@@ -40,7 +40,7 @@ def test_set_result():
     c setResult(99)"""
     res, space = interpret(inp)
     assert isinstance(res, W_Coroutine)
-    assert res.slots['result'].value == 99
+    assert res.slots['result'].number_value == 99
 
 def test_parentCoroutine_proto():
     inp = 'Coroutine parentCoroutine'
@@ -63,7 +63,7 @@ def test_coro_result_last_value():
     c run
     c"""
     res, space = interpret(inp)
-    assert res.slots['result'].value == 99
+    assert res.slots['result'].number_value == 99
 
 def test_coro_parent_resume_switch():
     py.test.skip()
@@ -91,8 +91,8 @@ def test_coro_parent_resume_switch():
     """
     res,space = interpret(inp)
 
-    assert space.w_lobby.slots['a'].slots['result'].value == 23
-    assert space.w_lobby.slots['p'].slots['result'].value == 99
+    assert space.w_lobby.slots['a'].slots['result'].number_value == 23
+    assert space.w_lobby.slots['p'].slots['result'].number_value == 99
 
 def test_coro_resume2():
     inp = """
@@ -105,13 +105,13 @@ def test_coro_resume2():
     a result
     """
     res, space = interpret(inp)
-    assert res.value == 4
-    assert space.w_lobby.slots['b'].slots['result'].value == 5
+    assert res.number_value == 4
+    assert space.w_lobby.slots['b'].slots['result'].number_value == 5
 
 def test_coro_stacksize():
     inp = 'Coroutine clone stackSize'
     res, space = interpret(inp)
-    assert res.value == 128000*10
+    assert res.number_value == 128000*10
 
 def test_coro_clone():
     inp = 'Coroutine clone'
@@ -121,7 +121,7 @@ def test_coro_clone():
 def test_scheduler_current_coro():
     inp = """list(Scheduler currentCoroutine, Coroutine currentCoroutine)"""
     res, space = interpret(inp)
-    assert res.items[0] is res.items[1]
+    assert res.list_items[0] is res.list_items[1]
 
 def test_coroutine_corofor():
     py.test.skip()
@@ -148,8 +148,8 @@ def test_xxx0():
     a run;
     """
     res,space = interpret(inp)
-    assert space.w_lobby.slots['a'].slots['result'].value == 23
-    assert space.w_lobby.slots['p'].slots['result'].value == 99
+    assert space.w_lobby.slots['a'].slots['result'].number_value == 23
+    assert space.w_lobby.slots['p'].slots['result'].number_value == 99
 
 
 def test_lookup_problem1():
@@ -166,7 +166,7 @@ def test_lookup_problem1():
     """
     res,space = interpret(inp)
     print res
-    assert res.value == 4
+    assert res.number_value == 4
 
 def test_lookup_problem2():
     inp = """
@@ -183,7 +183,7 @@ def test_lookup_problem2():
     result
     """
     res,space = interpret(inp)
-    assert res.value == 4
+    assert res.number_value == 4
 
 
 def test_lookup_problem3():
@@ -202,4 +202,4 @@ def test_lookup_problem3():
     """
     res,space = interpret(inp)
     print res
-    assert res.value == 4
+    assert res.number_value == 4

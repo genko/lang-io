@@ -13,7 +13,7 @@ def test_parse_number_token():
 def test_parse_number_sets_cached_result():
     t = parse(space, "4")
     assert isinstance(t.cached_result, W_Number)
-    assert t.cached_result.value == 4
+    assert t.cached_result.number_value == 4
 
 def test_parse_hexnumber_token():
     t = parse(space, "0xf")
@@ -23,7 +23,7 @@ def test_parse_hexnumber_token():
 def test_parse_hexnumber_sets_cached_result():
     t = parse(space, '0xf')
     assert isinstance(t.cached_result, W_Number)
-    assert t.cached_result.value == 15
+    assert t.cached_result.number_value == 15
 
 def test_parse_identifier():
     t = parse(space, 'foo')
@@ -69,7 +69,7 @@ def test_parse_message_chain():
     next = t.next
     assert isinstance(next, W_Message)
     assert next.name == '1'
-    assert next.cached_result.value == 1
+    assert next.cached_result.number_value == 1
 
 def test_parse_message_chain_with_arguments():
     t = parse(space, 'a("foo", "bar") 1')
@@ -78,7 +78,7 @@ def test_parse_message_chain_with_arguments():
     next = t.next
     assert isinstance(next, W_Message)
     assert next.name == '1'
-    assert next.cached_result.value == 1
+    assert next.cached_result.number_value == 1
 
 def test_parse_empty_string_produces_nil_message():
     t = parse(space, '')

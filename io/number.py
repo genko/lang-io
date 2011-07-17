@@ -1,4 +1,4 @@
-from math import ceil, floor
+from math import ceil, floor, fmod, pow
 from io.register import register_method
 from io.model import W_Number
 
@@ -13,11 +13,11 @@ def w_number_minus(space, target, argument):
 @register_method('Number', '%', unwrap_spec=[float, float], alias=['mod'])
 def w_number_modulo(space, target, argument):
     argument = abs(argument)
-    return W_Number(space, target % argument)
+    return W_Number(space, fmod(target, argument))
 
 @register_method('Number', '**', unwrap_spec=[float, float], alias=['pow'])
 def w_number_modulo(space, target, argument):
-    return W_Number(space, target ** argument)
+    return W_Number(space, pow(target, argument))
 
 @register_method('Number', 'ceil', unwrap_spec=[float])
 def w_number_modulo(space, target):
@@ -42,28 +42,29 @@ def w_number_as_number(space, w_target):
     
 @register_method('Number', '/', unwrap_spec=[float, float])
 def w_number_divide(space, dividend, divisor):
-    nan = False
-    inf = False
-    try:
-        value = dividend/float(divisor)
-    except ZeroDivisionError, e:
-        # XXX: TODO not sure if this is rpython
+    if divisor == 0:
         if dividend == 0:
             value = float('nan')
         else:
             value = float('inf')
-    finally:
-        return W_Number(space, value)
-    
+    else:
+        value = dividend / divisor
+    return W_Number(space, value)
+
 @register_method('Number', '*', unwrap_spec=[float, float])
 def w_number_multiply(space, a, b):
     return W_Number(space, a*b)
     
 @register_method('Number', '==', unwrap_spec=[float, float])
 def w_number_equals(space, a, b):
-    return space.newbool(cmp(a, b) == 0)
-    
+    return space.newbool(a == b)
+
 @register_method('Number', 'compare', unwrap_spec=[float, float])
 def w_number_compare(space, a, b):
-     return W_Number(space, cmp(a,b), [space.w_number])
-    
+    if a < b:
+        return W_Number(space, -1, [space.w_number])
+    elif a == b:
+        return W_Number(space, 0, [space.w_number])
+    else:
+        return W_Number(space, 1, [space.w_number])
+

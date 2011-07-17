@@ -61,14 +61,14 @@ names = ["Whitespace", "Comment", "Identifier", "Number", "HexNumber",
         "Comma"]
 ignores = ['Whitespace', 'Comment']
 
+lexer = Lexer([parse_regex(r) for r in rexs], names, ignores)
 
 def get_lexer():
     return IoLexer()
 
 class IoLexer(object):
     def __init__(self):
-        super(IoLexer, self).__init__()
-        self.lexer = Lexer([parse_regex(r) for r in rexs], names, ignores)
+        self.lexer = lexer
 
     def tokenize(self, input):
         tokens = self.lexer.tokenize(input)
@@ -92,6 +92,7 @@ class IoLexer(object):
             else:
                 continue
 
+            assert i >= 0
             tokens.insert(i, Token('Identifier', token_to_add,
                             SourcePos(tokens[i].source_pos.i,
                              tokens[i].source_pos.lineno,
@@ -107,7 +108,6 @@ def parse(space, string):
 
 class IoParser(object):
     def __init__(self, code, space):
-        super(IoParser, self).__init__()
         self.code = code
         self.space = space
         self.tokens = get_lexer().tokenize(self.code)
@@ -122,7 +122,7 @@ class IoParser(object):
             return W_Message(self.space, 'nil', [])
         token = self.tokens.pop(0)
         if token.name == 'Comment':
-            raise 'Found comment', token
+            raise RuntimeError('Found comment: ' + token.source)
         # method = getattr(self, "parse_" + token.name.lower())
         arguments = self.parse_arguments()
         message = self.parse_token(token, arguments)

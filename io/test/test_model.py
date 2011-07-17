@@ -3,9 +3,9 @@ from io.objspace import ObjSpace
 
 def test_parse_literal():
     space = ObjSpace()
-    assert parse_literal(space, "2").value == 2
-    assert parse_literal(space, "0xFF").value == 255
-    assert parse_literal(space, "2.3").value == 2.3
+    assert parse_literal(space, "2").number_value == 2
+    assert parse_literal(space, "0xFF").number_value == 255
+    assert parse_literal(space, "2.3").number_value == 2.3
     assert parse_literal(space, '"a"').value == 'a'
     assert parse_literal(space, 'a') is None
 
@@ -59,9 +59,9 @@ def test_lookup_cycling_complex():
     b.slots['b'] = W_Number(space, 2)
     c.slots['c'] = W_Number(space, 3)
     assert a.lookup('fail') is None
-    assert a.lookup('a').value == 1
-    assert a.lookup('b').value == 2
-    assert a.lookup('c').value == 3
+    assert a.lookup('a').number_value == 1
+    assert a.lookup('b').number_value == 2
+    assert a.lookup('c').number_value == 3
     
 def test_lookup_cycle_builtins():
     space = ObjSpace()

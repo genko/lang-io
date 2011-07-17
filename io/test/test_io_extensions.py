@@ -5,10 +5,10 @@ from io.model import W_Object, W_List, W_Block
 def test_map_asObject():
     inp = 'Map clone atPut("1", 12345) atPut("2", 99) atPut("3", 3) atPut("4", 234) asObject'
     res, space = interpret(inp)
-    assert res.slots['1'].value == 12345
-    assert res.slots['2'].value == 99
-    assert res.slots['3'].value == 3
-    assert res.slots['4'].value == 234
+    assert res.slots['1'].number_value == 12345
+    assert res.slots['2'].number_value == 99
+    assert res.slots['3'].number_value == 3
+    assert res.slots['4'].number_value == 234
 
 def test_map_asObject_clones_object_proto():
     inp = 'Map clone atPut("1", 12345) atPut("2", 99) atPut("3", 3) atPut("4", 234) asObject'
@@ -27,7 +27,7 @@ def test_map_as_list():
 def test_new_slot():
     inp = """timers ::= 1"""
     res, space = interpret(inp)
-    assert space.w_lobby.slots['timers'].value == 1
+    assert space.w_lobby.slots['timers'].number_value == 1
     # assert isinstance(space.w_lobby.slots['setTimers'], W_Block)
 
 def test_new_slot_complex():
@@ -39,7 +39,7 @@ def test_new_slot_complex():
     a timers"""
 
     res, space = interpret(inp)
-    assert res.value == 99
+    assert res.number_value == 99
     a = space.w_lobby.slots['a']
     assert 'timers' in a.slots
     assert 'setTimers' in a.slots
@@ -56,7 +56,7 @@ def test_new_slot_with_lookup():
     a timer
     """
     res, space = interpret(inp)
-    assert res.value == 99
+    assert res.number_value == 99
     a = space.w_lobby.slots['a']
     assert 'timer' in a.slots
     assert 'setTimer' in a.slots
@@ -70,7 +70,7 @@ def test_new_slot_with_var():
         a foobar
     """
     res,space = interpret(inp)
-    assert res.value == 4
+    assert res.number_value == 4
 
 def test_new_slot_with_var2():
     inp = """
@@ -83,4 +83,4 @@ def test_new_slot_with_var2():
         a foobar
     """
     res,space = interpret(inp)
-    assert res.value == 23
+    assert res.number_value == 23

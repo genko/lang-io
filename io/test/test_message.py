@@ -43,7 +43,7 @@ def test_argsEvaluatedIn():
     f m(x)
     """
     res, space = interpret(inp)
-    values = [x.value for x in res.items]
+    values = [x.number_value for x in res.list_items]
     assert values == [99]
 def test_argsEvaluatedIn2():
     inp = """
@@ -57,7 +57,7 @@ def test_argsEvaluatedIn2():
     f do(return m(x))
     """
     res, space = interpret(inp)
-    values = [x.value for x in res.items]
+    values = [x.number_value for x in res.list_items]
     assert values == [1]
 
 # def test_setIsActivatable():

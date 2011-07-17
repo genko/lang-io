@@ -31,7 +31,7 @@ class W_Coroutine(Coroutine):
     @staticmethod
     def _get_state(space):
         # XXX: Need a propper caching machinery
-        if not hasattr(space, '_coroutine_state'):
+        if space._coroutine_state is None:
             space._coroutine_state = AppCoState(space)
             space._coroutine_state.post_install()
         return space._coroutine_state

@@ -1,5 +1,6 @@
 from io.register import register_method
 from io.model import W_ImmutableSequence, W_Block, W_Number
+from io.util import capitalize
 
 @register_method('Object', 'setSlot', unwrap_spec=[object, str, object])
 def w_object_set_slot(space, w_target, name, w_value):
@@ -73,11 +74,11 @@ def object_message(space, w_target, w_message, w_context):
 def object_minus(space, w_target, argument):
     return W_Number(space, -argument)
 
-@register_method('Object', 'debugger')
-def object_message(space, w_target, w_message, w_context):
-    import pdb
-    pdb.set_trace()
-    return w_target
+## @register_method('Object', 'debugger')
+## def object_message(space, w_target, w_message, w_context):
+##     import pdb
+##     pdb.set_trace()
+##     return w_target
 
 @register_method('Object', 'for')
 def object_for(space, w_target, w_message, w_context):
@@ -85,19 +86,21 @@ def object_for(space, w_target, w_message, w_context):
    assert argcount >= 4 and argcount <=5
 
    body = w_message.arguments[-1]
-   start = w_message.arguments[1].eval(space, w_target, w_context).value
-   stop = 1 + w_message.arguments[2].eval(space, w_target, w_context).value
+   start = w_message.arguments[1].eval(space, w_target, w_context).number_value
+   stop = 1 + w_message.arguments[2].eval(space, w_target, w_context).number_value
    if argcount == 4:
       step = 1
    else:
-      step = w_message.arguments[3].eval(space, w_message, w_context).value
+      step = w_message.arguments[3].eval(space, w_message, w_context).number_value
 
+   # Help annotator
+   t = None
 
    key = w_message.arguments[0].name
 
    space.normal_status()
-   for i in range(start, stop, step):
-      w_context.slots[key] = W_Number(space, i)
+   for i in range(int(start), int(stop), int(step)):
+      w_context.slots[key] = W_Number(space, float(i))
       t = body.eval(space, w_context, w_context)
 
       if not space.is_normal_status():
@@ -174,20 +177,23 @@ def object_do_string(space, w_target, code):
     ast = parse(space, code)
     return ast.eval(space, w_target, w_target)
 
-
 # XXX replace with the original one in A2_Object.io when it works
+from io.model import W_Object
+class W_setSlotFunction(W_Object):
+    def __init__(self, space, name):
+        W_Object.__init__(self, space)
+        self.name = name
+
+    def apply(self, space, w_receiver, w_message, w_context):
+        w_receiver.slots[self.name] = w_message.arguments[0].eval(space, w_context,
+                                                             w_receiver)
+        return w_receiver
 @register_method('Object', 'newSlot', unwrap_spec=[object, str, object])
 def object_new_slot(space, w_target, name, w_value):
     from io.model import W_CFunction
     w_target.slots[name] = w_value
-
-    def setSlot(my_space, w_w_target, w_w_message, w_w_context):
-        w_w_target.slots[name] = w_w_message.arguments[0].eval(my_space,
-                                                                w_w_context,
-                                                                w_w_target)
-        return w_w_target
-
-    w_target.slots['set%s' % (name[0].capitalize() + name[1:])] = W_CFunction(space, setSlot)
+    slot_name = 'set%s%s' % (name[0].upper(), name[1:])
+    w_target.slots[slot_name] = W_setSlotFunction(space, name)
 
 @register_method('Object', 'updateSlot', unwrap_spec=[object, str, object])
 def object_update_slot(space, w_target, slotname, w_value):

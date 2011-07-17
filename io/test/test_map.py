@@ -64,19 +64,20 @@ def test_has_key():
 def test_size():
     inp = 'Map clone size'
     res, space = interpret(inp)
-    assert res.value == 0
+    assert res.number_value == 0
 
     inp = 'Map clone atPut("1", nil) atPut("2", "lorem") size'
     res, space = interpret(inp)
-    assert res.value == 2
+    assert res.number_value == 2
 
 def test_remove_at():
     inp = 'Map clone atPut("1", "nil") atPut("2", "lorem") atPut("3", 3) atPut("4", 234) removeAt("2")'
     res, space = interpret(inp)
-    keys = res.items.keys()
+    keys = sorted(res.items.keys())
     assert keys == ['1', '3', '4']
-    values = [entry.value for entry in res.items.values()]
-    assert values == ['nil', 3, 234]
+    assert res.items['1'].value == 'nil'
+    for (key, expected) in [('3', 3), ('4', 234)]:
+        assert res.items[key].number_value == expected
 
 def test_has_value():
     inp = 'Map clone atPut("1", "nil") atPut("2", "lorem") atPut("3", 3) atPut("4", 234) hasValue(234)'
@@ -91,7 +92,7 @@ def test_values():
     inp = 'Map clone atPut("1", 12345) atPut("2", 99) atPut("3", 3) atPut("4", 234) values'
     res, space = interpret(inp)
     assert isinstance(res, W_List)
-    values = [x.value for x in res.items]
+    values = [x.number_value for x in res.list_items]
     should = [12345, 99, 3, 234]
     assert len(should) == len(values)
     for x in values:
@@ -107,7 +108,7 @@ def test_foreach():
     c := list()
     b foreach(key, value, c append(list(key, value))); c"""
     res,space = interpret(inp)
-    value = sorted([(x.items[0].value, x.items[1].value) for x in res.items])
+    value = sorted([(x.list_items[0].value, x.list_items[1].number_value) for x in res.list_items])
     assert value == [('1', 12345), ('2', 99), ('3', 3), ('4', 234)]
 
 def test_map_foreach_continue():
@@ -120,7 +121,7 @@ def test_map_foreach_continue():
     c := list()
     b foreach(key, value, if(value == 99, continue); c append(list(key, value))); c"""
     res,space = interpret(inp)
-    value = sorted([(x.items[0].value, x.items[1].value) for x in res.items])
+    value = sorted([(x.list_items[0].value, x.list_items[1].number_value) for x in res.list_items])
     assert value == [('1', 12345), ('3', 3), ('4', 234)]
 
 def test_map_foreach_break():
@@ -133,8 +134,8 @@ def test_map_foreach_break():
     c := list()
     b foreach(key, value, break(99); c append(list(key, value)));"""
     res,space = interpret(inp)
-    assert space.w_lobby.slots['c'].items == []
-    assert res.value == 99
+    assert space.w_lobby.slots['c'].list_items == []
+    assert res.number_value == 99
 
 
 def test_map_foreach_leaks():
@@ -147,8 +148,8 @@ def test_map_foreach_leaks():
     c := list()
     b foreach(key, value, c append(list(key, value))); list(key,value)"""
     res,space = interpret(inp)
-    l = [x.value for x in res.items]
-    assert l == ['4', 234]
+    l = [(x.value, y.number_value) for (x, y) in zip(*[iter(res.list_items)]*2)]
+    assert l == [('4', 234)]
 
 def test_keys():
     inp = """b := Map clone do(
@@ -159,7 +160,7 @@ def test_keys():
     )
     b keys"""
     res, space = interpret(inp)
-    keys = sorted([x.value for x in res.items])
+    keys = sorted([x.value for x in res.list_items])
     assert keys == ['1', '2', '3', '4']
 
 def test_do_on_map_sum():
@@ -175,7 +176,7 @@ def test_do_on_map_sum():
     Map clone atPut("a", 123) atPut("b", 234) atPut("c", 345) sum"""
     res, _ = interpret(inp)
     assert isinstance(res, W_Number)
-    assert res.value == 702
+    assert res.number_value == 702
 
 
 def test_map_asObject_inline():
@@ -189,17 +190,17 @@ def test_map_asObject_inline():
     )
     Map clone atPut("1", 12345) atPut("2", 99) atPut("3", 3) atPut("4", 234) asObject"""
     res, space = interpret(inp)
-    assert res.slots['1'].value == 12345
-    assert res.slots['2'].value == 99
-    assert res.slots['3'].value == 3
-    assert res.slots['4'].value == 234
+    assert res.slots['1'].number_value == 12345
+    assert res.slots['2'].number_value == 99
+    assert res.slots['3'].number_value == 3
+    assert res.slots['4'].number_value == 234
 
 
 def test_map_with():
   inp = """Map with("a", 1, "b", 2) asObject"""
   res, space = interpret(inp)
-  assert res.slots['a'].value == 1
-  assert res.slots['b'].value == 2
+  assert res.slots['a'].number_value == 1
+  assert res.slots['b'].number_value == 2
 
 
 def test_map_raw_at():

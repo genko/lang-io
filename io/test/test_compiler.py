@@ -15,7 +15,7 @@ def test_parse_number():
     assert isinstance(res, W_Message)
     assert res.name == '42'
     assert isinstance(res.cached_result, W_Number)
-    assert res.cached_result.value == 42
+    assert res.cached_result.number_value == 42
 
 def test_parse_hexnumber():
     inp = 'Compiler messageForString("0xf")'
@@ -23,7 +23,7 @@ def test_parse_hexnumber():
     assert isinstance(res, W_Message)
     assert res.name == '0xf'
     assert isinstance(res.cached_result, W_Number)
-    assert res.cached_result.value == 15
+    assert res.cached_result.number_value == 15
 
 def test_parse_message_with_artguments():
     inp = 'Compiler messageForString("a(1,2)")'
@@ -41,7 +41,7 @@ def test_parse_message_chain():
     assert res.name == '1'
     assert isinstance(res.next, W_Message)
     assert res.next.name == '2'
-    assert res.next.cached_result.value == 2
+    assert res.next.cached_result.number_value == 2
 
 def test_parse_longer_message_chain():
     inp = 'Compiler messageForString("1 2 3 4 5 6")'

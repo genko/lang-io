@@ -6,24 +6,24 @@ def test_get_slot():
     input = "a := 1; a"
     #import pdb; pdb.set_trace()
     res, space = interpret(input)
-    assert res.value == 1
+    assert res.number_value == 1
 
 def test_parse_method():
     # py.test.skip()
     inp = "a := method(1)\na"
     # import pdb; pdb.set_trace()
     res,space = interpret(inp)
-    assert res.value == 1
+    assert res.number_value == 1
 
 def test_call_method_with_args():
     inp = "a := method(x, x+1)\na(2)"
     res,space = interpret(inp)
-    assert res.value == 3
+    assert res.number_value == 3
 
 def test_call_method_without_all_args():
     inp = "a := method(x, y, z, 42)\na(2)"
     res,space = interpret(inp)
-    assert res.value == 42
+    assert res.number_value == 42
 
 def test_unspecified_args_are_nil():
     inp = "a := method(x, y, z, z)\na(2)"
@@ -33,7 +33,7 @@ def test_unspecified_args_are_nil():
 def test_superfluous_args_are_ignored():
     inp = "a := method(x, y, z, z)\na(1,2,3,4,5,6,6,7)"
     res,space = interpret(inp)
-    assert res.value == 3
+    assert res.number_value == 3
 
 def test_method_proto():
     inp = 'a := method(f)'
@@ -51,28 +51,28 @@ def test_block_proto():
 def test_call_on_method():
     inp = 'a := method(x, x + 1); getSlot("a") call(3)'
     res, space = interpret(inp)
-    assert res.value == 4
+    assert res.number_value == 4
 
 def test_method_binding():
     inp = 'c := Object clone; c setSlot("b", 123); c setSlot("a", method(b)); c a'
     res, space = interpret(inp)
-    assert res.value == 123
+    assert res.number_value == 123
 
 def test_method_modified_binding():
     inp = 'c := Object clone; c setSlot("b",123); c setSlot("a", method(x, b)); c setSlot("b",1); c a(3)'
     res, space = interpret(inp)
-    assert res.value == 1
+    assert res.number_value == 1
 
 
 def test_block_binding():
     inp = 'c := Object clone; b := 123; c setSlot("a", block(x, b)); c a call(3)'
     res, space = interpret(inp)
-    assert res.value == 123
+    assert res.number_value == 123
 
 def test_block_modified_binding():
     inp = 'c := Object clone; b := 42; c setSlot("a", block(x, b)); b := 1; c a call(3)'
     res, space = interpret(inp)
-    assert res.value == 1
+    assert res.number_value == 1
 
 def test_block_call_slot():
     py.test.skip()
@@ -112,5 +112,6 @@ def test_resolution_order():
     test(7)
     """
     res, space = interpret(inp)
-    assert res.value == 33
-    assert space.w_lobby.slots[10].value == 33
+    assert res.number_value == 33
+    print space.w_lobby.slots
+    assert space.w_lobby.slots['10.0'].number_value == 33

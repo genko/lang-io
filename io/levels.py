@@ -1,4 +1,25 @@
 import io
+
+def _create_assign_operator_table(space):
+    ass_op_table = space.w_map.clone()
+    ass_op_table.at_put(':=', space.newsequence('setSlot'))
+    ass_op_table.at_put('=', space.newsequence('updateSlot'))
+    ass_op_table.at_put('::=', space.newsequence('newSlot'))
+    return ass_op_table
+
+def _create_operator_table(space):
+    # print "_create_operator_table called"
+    table = {"@": 0, "@@": 0, "?": 0, "**": 1, "*": 2, "/": 2, "%": 2,
+    "+": 3, "-": 3, "<<": 4, ">>": 4, ">": 5, "<": 5, "<=": 5, ">=": 5,
+    "==": 6, "!=": 6, "&": 7, "^": 8, "|": 9, "and": 10, "&&": 10,
+    "or": 11, "||": 11, "..": 12, "+=": 13, "-=": 13, "*=": 13, "/=": 13,
+    "%=": 13, "&=": 13, "^=": 13, "|=": 13, "<<=": 13, ">>=": 13,
+    "return": 14}
+    op_table = space.w_map.clone()
+    for key in table:
+        op_table.at_put(key, io.model.W_Number(space, table[key]))
+    return op_table
+
 class Levels(object):
     NEW = 0
     ATTACH = 1
@@ -7,7 +28,6 @@ class Levels(object):
     IO_OP_MAX_LEVEL = 32
 
     def __init__(self, space, w_message):
-        super(Levels, self).__init__()
         self.space = space
         if 'OperatorTable' not in w_message.slots:
             # print "OperatorTable not in message slots"
@@ -16,13 +36,13 @@ class Levels(object):
                 # create a new one in state.w_core
                 operator_table = space.w_object.clone()
                 space.w_core.slots['OperatorTable'] = operator_table
-                operator_table.slots['precedenceLevelCount'] = Levels.IO_OP_MAX_LEVEL
+                operator_table.slots['precedenceLevelCount'] = io.model.W_Number(space, Levels.IO_OP_MAX_LEVEL)
             else:
                 operator_table = space.w_core.slots['OperatorTable']
         else:
             operator_table = w_message.slots['OperatorTable']
-        self.operator_table = self._get_op_table(operator_table, 'operators', self._create_operator_table)
-        self.assign_operator_table = self._get_op_table(operator_table, 'assignOperators', self._create_assign_operator_table)
+        self.operator_table = self._get_op_table(operator_table, 'operators', _create_operator_table)
+        self.assign_operator_table = self._get_op_table(operator_table, 'assignOperators', _create_assign_operator_table)
         self.reset()
 
     def reset(self):
@@ -35,27 +55,7 @@ class Levels(object):
 
         self.stack = [level]
 
-    def _create_assign_operator_table(self):
-        ass_op_table = self.space.w_map.clone()
-        ass_op_table.at_put(':=', self.space.newsequence('setSlot'))
-        ass_op_table.at_put('=', self.space.newsequence('updateSlot'))
-        ass_op_table.at_put('::=', self.space.newsequence('newSlot'))
-        return ass_op_table
-
-    def _create_operator_table(self):
-        # print "_create_operator_table called"
-        table = {"@": 0, "@@": 0, "?": 0, "**": 1, "*": 2, "/": 2, "%": 2,
-        "+": 3, "-": 3, "<<": 4, ">>": 4, ">": 5, "<": 5, "<=": 5, ">=": 5,
-        "==": 6, "!=": 6, "&": 7, "^": 8, "|": 9, "and": 10, "&&": 10,
-        "or": 11, "||": 11, "..": 12, "+=": 13, "-=": 13, "*=": 13, "/=": 13,
-        "%=": 13, "&=": 13, "^=": 13, "|=": 13, "<<=": 13, ">>=": 13,
-        "return": 14}
-        op_table = self.space.w_map.clone()
-        for key in table:
-            op_table.at_put(key, io.model.W_Number(self.space, table[key]))
-        return op_table
-
-    def _get_op_table(self, operator_table, slot_name, callback):
+    def _get_op_table(self, operator_table, slot_name, callback=None):
         if slot_name in operator_table.slots and isinstance(operator_table.slots[slot_name], io.model.W_Map):
             return operator_table.slots[slot_name]
 
@@ -64,7 +64,7 @@ class Levels(object):
             # Not strictly correct as if the message has its own empty
             # OperatorTable slot, we'll create one for it instead of using
             # Core Message OperatorTable operators. Oh well.
-            result = callback()
+            result = callback(self.space)
             operator_table.slots[slot_name] = result
             return result
 
@@ -210,12 +210,12 @@ class Levels(object):
             # print "%s not found in the operator_table slots" % w_message.name
             return -1
         operator = self.operator_table.at(w_message.name)
-        if type(operator) == io.model.W_Number:
-            value = operator.value
+        if isinstance(operator, io.model.W_Number):
+            value = operator.number_value
             if value < 0 or value >= Levels.IO_OP_MAX_LEVEL:
                 #'XXX Some corresponding exception'#error
                 raise IoException("compile error: Precedence for operators \
-                    must be between 0 and %d. Precedence was %d."
+                    must be between 0 and %d. Precedence was %f."
                     % (Levels.IO_OP_MAX_LEVEL - 1, value))
             return value
         else:
@@ -233,9 +233,9 @@ class Levels(object):
 
 class IoException(Exception):
     pass
+
 class Level(object):
     def __init__(self, level_type=None):
-        super(Level, self).__init__()
         if level_type is None:
           level_type = Levels.NEW
         self.message = None
@@ -261,16 +261,21 @@ class Level(object):
             pass
 
     def finish(self, expressions):
-        if self.message:
+        if self.message is not None:
             self.message.next = None
             # Remove extra () we added in for operators, but do not need any more
             if len(self.message.arguments) == 1:
                 arg = self.message.arguments[0]
+
+                # Help annotator
+                assert isinstance(arg, io.model.W_Message)
+
                 if (arg.name == '' and len(arg.arguments) == 1
-                                                        and arg.next == None):
+                                                        and arg.next is None):
                     del self.message.arguments[0:]
                     self.message.arguments = arg.arguments
                     arg.arguments = []
+            assert isinstance(self.message.arguments, list)
         self.type = Levels.UNUSED
 
     def __repr__(self):

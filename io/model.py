@@ -52,52 +52,52 @@ class W_Object(object):
 class W_Number(W_Object):
     """Number"""
     def __init__(self, space, value, protos = None):
-        self.value = value
+        self.number_value = value
         if protos is None:
             pp = [space.w_number]
         else:
             pp = protos
         W_Object.__init__(self, space, pp)
 
-
     def clone(self):
-        cloned = W_Number(self.space, self.value)
+        cloned = W_Number(self.space, self.number_value)
         cloned.protos = [self]
         return cloned
 
     def hash(self):
-        return hash(self.value)
+        return hash(self.number_value)
 
     def __repr__(self):
         """NOT RPYTHON"""
-        return "<W_Number %s>" % self.value
+        return "<W_Number ...>"
+        return "<W_Number %s>" % self.number_value
 
 class W_List(W_Object):
     def __init__(self, space, protos = [], items = []):
         W_Object.__init__(self, space, protos)
-        self.items = items
+        self.list_items = items
 
     def extend(self, items_w):
-        self.items.extend(items_w)
+        self.list_items.extend(items_w)
 
     def __getitem__(self, index):
         try:
-            return self.items[index]
+            return self.list_items[index]
         except IndexError:
             return self.space.w_nil
 
 
     def clone(self):
-        return W_List(self.space, [self], list(self.items))
+        return W_List(self.space, [self], list(self.list_items))
 
     def clone_and_init(self, space, items):
         l = self.clone()
-        l.items += items
+        l.list_items += items
         return l
 
     def hash(self):
         h = 0
-        for x in self.items:
+        for x in self.list_items:
             h += x.hash()
         return h
 
@@ -108,7 +108,7 @@ class W_Map(W_Object):
         self.items = items
 
     def clone(self):
-        return W_Map(self.space, [self], dict(self.items))
+        return W_Map(self.space, [self], self.items.copy())
 
     def hash(self):
         h = 0
@@ -118,7 +118,7 @@ class W_Map(W_Object):
 
     def at(self, key):
         assert isinstance(key, str)
-        return self.items.get(key)
+        return self.items.get(key, None)
 
     def at_put(self, key, w_value):
         assert isinstance(w_value, W_Object)
@@ -152,6 +152,9 @@ class W_Map(W_Object):
         return [x for x in self.items.values()]
 
     def foreach(self, space, key_name, value_name, w_body, w_context):
+        # Help annotator
+        t = None
+
         for key, item in self.items.iteritems():
             w_context.slots[key_name] = space.newsequence(key)
             w_context.slots[value_name] = item
@@ -175,6 +178,7 @@ class W_Map(W_Object):
 class W_ImmutableSequence(W_Object):
     def __init__(self, space, string, protos=[]):
         W_Object.__init__(self, space, protos)
+        assert isinstance(string, str)
         self.value = string
 
     def hash(self):
@@ -207,6 +211,7 @@ class W_Message(W_Object):
     def __init__(self, space, name, arguments, next = None):
         self.name = name
         self.cached_result = parse_literal(space, name)
+        assert isinstance(arguments, list)
         self.arguments = arguments
         self.next = next
         W_Object.__init__(self, space, [space.w_message])
@@ -234,7 +239,7 @@ class W_Message(W_Object):
             w_result = self.cached_result
         else:
             w_method = w_receiver.lookup(self.name)
-            assert w_method is not None, 'Method "%s" not found in "%s"' % (self.name, w_receiver.__class__)
+            assert w_method is not None, 'Method "%s" not found in "%s"' % (self.name, str(w_receiver))
             w_result = w_method.apply(space, w_receiver, self, w_context)
             if not space.is_normal_status():
                 print 'Returning non default value'
@@ -252,6 +257,9 @@ class W_Message(W_Object):
         # shift operation
         n, expressions = expressions[0], expressions[1:]
         while n is not None:
+          # Help annotator
+          assert isinstance(n, W_Message)
+
           levels.attach(n, expressions)
           expressions += n.arguments
           n = n.next
@@ -319,10 +327,13 @@ def parse_hex(string):
     return int(string, 16)
 
 def parse_literal(space, literal):
-    for t in [int, float, parse_hex]:
-        try:
-            return W_Number(space, t(literal))
-        except ValueError:
-            pass
+    if literal.startswith("0x"):
+        return W_Number(space, parse_hex(literal))
+    try:
+        return W_Number(space, float(literal))
+    except ValueError:
+        pass
     if literal.startswith('"') and literal.endswith('"'):
-        return space.w_sequence.clone_and_init(literal[1:-1])
+        stop = len(literal) - 1
+        assert stop >= 0
+        return space.w_sequence.clone_and_init(literal[1:stop])
