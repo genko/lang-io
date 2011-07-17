@@ -1,7 +1,4 @@
-# XXX wtf
 import greenlet
-import py.magic
-py.magic.__dict__['greenlet'] = greenlet.greenlet
 
 from io.model import W_Object
 from pypy.rlib.rcoroutine import make_coroutine_classes

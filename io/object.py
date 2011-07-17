@@ -1,6 +1,5 @@
 from io.register import register_method
 from io.model import W_ImmutableSequence, W_Block, W_Number
-from io.util import capitalize
 
 @register_method('Object', 'setSlot', unwrap_spec=[object, str, object])
 def w_object_set_slot(space, w_target, name, w_value):
