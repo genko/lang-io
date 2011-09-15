@@ -12,12 +12,12 @@ BaseCoState = d['BaseCoState']
 class W_Coroutine(Coroutine):
     def __init__(self, space, state, protos):
         Coroutine.__init__(self, state)
-        
+
         W_Object.__init__(self, space, protos)
 
     def clone(self):
         return W_Coroutine(self.space, self.costate, [self])
-    
+
     @staticmethod
     def w_getcurrent(space):
         return W_Coroutine._get_state(space).current
@@ -32,7 +32,7 @@ class W_Coroutine(Coroutine):
             space._coroutine_state = AppCoState(space)
             space._coroutine_state.post_install()
         return space._coroutine_state
-        
+
     def run(self, space, w_receiver, w_context):
         if self.thunk is None:
             t = IoThunk(space, self.slots['runMessage'], w_receiver, w_context)
@@ -41,13 +41,13 @@ class W_Coroutine(Coroutine):
             if not space.isnil(p):
                 self.parent = p
         self.switch()
-        
+
 
 class AppCoState(BaseCoState):
     def __init__(self, space):
         BaseCoState.__init__(self)
         self.space = space
-        
+
     def post_install(self):
         self.main = W_Coroutine(self.space, self, [self.space.w_object])
         self.current = self.main
@@ -59,7 +59,7 @@ class IoThunk(AbstractThunk):
         self.w_message = w_message
         self.w_receiver = w_receiver
         self.w_context = w_context
-    
+
     def call(self):
         t = self.w_message.eval(self.space, self.w_receiver, self.w_context)
         self.w_receiver.slots['result'] = t
