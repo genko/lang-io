@@ -197,6 +197,15 @@ def test_object_if3():
     res, space = interpret(inp)
     assert res is space.w_false
 
+def test_if_object():
+    inp = 'if(Object)'
+    res, space = interpret(inp)
+    assert res is space.w_true
+
+    inp = 'if(nil)'
+    res, space = interpret(inp)
+    assert res is space.w_false
+
 def test_object_stopStatus():
     inp = 'stopStatus'
     res, space = interpret(inp)

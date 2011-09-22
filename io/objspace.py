@@ -204,8 +204,14 @@ class ObjSpace(object):
             return self.w_true
         return self.w_false
 
+    def istrue(self, value):
+        if value is not self.w_false and value is not self.w_nil:
+            return True
+        return False
+
     def newsequence(self, value):
         return self.w_immutable_sequence.clone_and_init(value)
+
     def isnil(self, w_object):
         return w_object is self.w_nil
 
