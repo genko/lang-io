@@ -47,7 +47,7 @@ class W_Object(object):
 
     def __repr__(self):
         """NOT RPYTHON"""
-        return "<W_Object slots=%s>" % (self.slots.keys(),)
+        return "<%s slots=%s>" % (self.__class__.__name__, self.slots.keys(),)
 
 class W_Number(W_Object):
     """Number"""
@@ -297,10 +297,10 @@ class W_Block(W_Object):
                 w_locals.slots[args[i]] = space.w_nil
 
         if self.activateable:
-            w_locals.protos = [w_receiver]
+            w_locals.protos.append(w_receiver)
             w_locals.slots['self'] = w_receiver
         else:
-            w_locals.protos = [w_context]
+            w_locals.protos.append(w_context)
             w_locals.slots['self'] = w_context
 
         w_locals.slots['call'] = w_call

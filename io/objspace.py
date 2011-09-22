@@ -13,6 +13,7 @@ import io.map
 import io.coroutine
 import io.sequence
 import io.compiler
+import io.locals
 
 class ObjSpace(object):
     """docstring for ObjSpace"""
@@ -79,6 +80,8 @@ class ObjSpace(object):
 
         self.init_w_compiler()
 
+        self.init_w_locals()
+
     def init_w_map(self):
         for key, function in cfunction_definitions['Map'].items():
             self.w_map.slots[key] = W_CFunction(self, function)
@@ -98,6 +101,10 @@ class ObjSpace(object):
     def init_w_list(self):
         for key, function in cfunction_definitions['List'].items():
             self.w_list.slots[key] = W_CFunction(self, function)
+
+    def init_w_locals(self):
+        for key, function in cfunction_definitions['Locals'].items():
+            self.w_locals.slots[key] = W_CFunction(self, function)
 
     def init_w_core(self):
         self.w_core.protos.append(self.w_object)
