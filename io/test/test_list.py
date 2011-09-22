@@ -196,7 +196,8 @@ def test_remove_all():
     inp = 'a := list(9,8,7,6,5,4,3,2,1,100); a removeAll; a'
     res, space = interpret(inp)
     assert isinstance(res, W_List)
-    assert [x.value for x in res.list_items] == []
+    assert res.list_items == []
+
 def test_remove():
     inp = 'a := list(9,8,7,6,5,4,3,2,1,100); a remove(7)'
     res, space = interpret(inp)
