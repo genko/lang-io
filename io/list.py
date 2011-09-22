@@ -128,6 +128,12 @@ def list_remove_all(space, w_target, w_message, w_context):
         raise Exception, 'index out of bounds'
 
     return w_target
+
+@register_method('List', 'remove')
+def list_remove_all(space, w_target, w_message, w_context):
+    w_item = w_message.arguments[0].eval(space, w_target, w_context)
+    w_target.list_items.remove(w_item)
+    return w_target
     
 @register_method('List', 'atPut')
 def list_reverse_in_place(space, w_target, w_message, w_context):

@@ -197,6 +197,11 @@ def test_remove_all():
     res, space = interpret(inp)
     assert isinstance(res, W_List)
     assert [x.value for x in res.list_items] == []
+def test_remove():
+    inp = 'a := list(9,8,7,6,5,4,3,2,1,100); a remove(7)'
+    res, space = interpret(inp)
+    assert isinstance(res, W_List)
+    assert [int(x.number_value) for x in res.list_items] == [9,8,6,5,4,3,2,1,100]
 
 def test_at_put():
     inp = 'a := list(9,8,7,6,5,4,3,2,1,100); a atPut(3, 1045)'
