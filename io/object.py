@@ -175,24 +175,6 @@ def object_do_string(space, w_target, code):
     ast = parse(space, code)
     return ast.eval(space, w_target, w_target)
 
-# XXX replace with the original one in A2_Object.io when it works
-from io.model import W_Object
-class W_setSlotFunction(W_Object):
-    def __init__(self, space, name):
-        W_Object.__init__(self, space)
-        self.name = name
-
-    def apply(self, space, w_receiver, w_message, w_context):
-        w_receiver.slots[self.name] = w_message.arguments[0].eval(space, w_context,
-                                                             w_receiver)
-        return w_receiver
-@register_method('Object', 'newSlot', unwrap_spec=[object, str, object])
-def object_new_slot(space, w_target, name, w_value):
-    from io.model import W_CFunction
-    w_target.slots[name] = w_value
-    slot_name = 'set%s%s' % (name[0].upper(), name[1:])
-    w_target.slots[slot_name] = W_setSlotFunction(space, name)
-
 @register_method('Object', 'updateSlot', unwrap_spec=[object, str, object])
 def object_update_slot(space, w_target, slotname, w_value):
     assert w_target.lookup(slotname) is not None

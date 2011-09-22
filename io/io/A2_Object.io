@@ -331,7 +331,6 @@ Object do(
 	and sets it's default the value aValue. Returns self. For example,
 	newSlot("foo", 1) would create slot named foo with the value 1 as well as a setter method setFoo().
 	*/
-/*
 	newSlot := method(name, value, doc,
 		getSlot("self") setSlot(name, getSlot("value"))
 		getSlot("self") setSlot("set" .. name asCapitalized,
@@ -339,7 +338,6 @@ Object do(
 			//if(doc, getSlot("self") docSlot(name, doc))
 		getSlot("value")
 	)
-*/
 	//doc Object launchFile(pathString) Eval file at pathString as if from the command line in it's folder.
   //doc System launchPath Returns a pathComponent of the launch file.
 	launchFile := method(path, args,

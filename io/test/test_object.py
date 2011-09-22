@@ -261,9 +261,33 @@ def test_object_update_slot():
     res, space = interpret(inp)
     assert res.number_value == 5
     assert space.w_lobby.slots['a'].number_value == 5
+
 def test_object_update_slot_raises():
     inp = 'qwer = 23'
     py.test.raises(Exception, 'interpret(inp)')
+
+def test_new_slot():
+    inp = """a := Object clone 
+    a foo ::= 45
+    a bar ::= 99
+    a setBar(123)
+    a
+    """
+    res, space = interpret(inp)
+    assert res.slots['foo'].number_value == 45
+    assert res.slots['bar'].number_value == 123
+    assert 'setFoo' in res.slots
+    assert 'setBar' in res.slots
+
+def test_new_slot_with_method():
+    inp = """a := Object clone 
+    a foo := method(setBar(123))
+    a bar ::= 99
+    a foo
+    a bar
+    """
+    res, space = interpret(inp)
+    assert res.number_value == 123
 
 def test_object_write():
     inp = """
