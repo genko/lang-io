@@ -16,3 +16,9 @@ def test_append_returns_copy():
 
 def test_sequence_as_capitalized():
     inp = '"asdf qerttz" asCapitalized'
+    res, space = interpret(inp)
+    assert res.value == "Asdf qerttz"
+
+    inp = '"fooBar" asCapitalized'
+    res, space = interpret(inp)
+    assert res.value == "FooBar"

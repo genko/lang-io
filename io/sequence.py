@@ -9,7 +9,7 @@ def sequence_append(space, w_sequence, w_append_seq):
     
 @register_method('Sequence', 'asCapitalized')
 def sequence_as_capitalized(space, w_target, w_message, w_context):
-    # c/p from pypy/objspace/std/stringobject.py
+    # based on pypy/objspace/std/stringobject.py
     input = w_target.value
     buffer = [' '] * len(input)
     if len(input) > 0:
@@ -22,11 +22,7 @@ def sequence_as_capitalized(space, w_target, w_message, w_context):
 
         for i in range(1, len(input)):
             ch = input[i]
-            if ch.isupper():
-                o = ord(ch) + 32
-                buffer[i] = chr(o)
-            else:
-                buffer[i] = ch
+            buffer[i] = ch
 
     s = space.w_sequence.clone()
     s.value = "".join(buffer)
