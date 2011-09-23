@@ -14,10 +14,10 @@ def w_object_set_slot_with_type(space, w_target, name, w_value):
 
 @register_method('Object', 'getSlot', unwrap_spec=[object, str])
 def w_object_get_slot(space, w_target, name):
-    try:
-        return w_target.slots[name]
-    except KeyError:
-        return space.w_nil
+    w_value = w_target.lookup(name)
+    if w_value:
+        return w_value
+    return space.w_nil
 
 @register_method('Object', 'hasSlot', unwrap_spec=[object, str])
 def w_object_has_slot(space, w_target, name):

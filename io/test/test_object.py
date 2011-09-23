@@ -32,6 +32,20 @@ def test_object_anon_slot():
     res, space = interpret(inp)
     assert res.value == 'foo'
 
+def test_object_get_proto_slot():
+    inp = """
+    a := Object clone
+    a someValue := 123
+    b := a clone
+    b getSlot("someValue")"""
+    res, space = interpret(inp)
+    assert res.number_value == 123
+
+def test_object_get_slot_fail():
+    inp = 'Object getSlot("notHere")'
+    res, space = interpret(inp)
+    assert res is space.w_nil
+
 def test_object_has_slot():
     inp = 'Object hasSlot("foo")'
     res, space = interpret(inp)
