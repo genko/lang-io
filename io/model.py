@@ -239,8 +239,14 @@ class W_Message(W_Object):
             w_result = self.cached_result
         else:
             w_method = w_receiver.lookup(self.name)
-            assert w_method is not None, 'Method "%s" not found in "%s"' % (self.name, str(w_receiver))
-            w_result = w_method.apply(space, w_receiver, self, w_context)
+            if w_method is not None:
+                w_result = w_method.apply(space, w_receiver, self, w_context)
+            else:
+                w_forward = w_receiver.lookup('forward')
+                if w_forward:
+                    w_result = w_forward.apply(space, w_receiver, self, w_context)
+                else:
+                    raise AssertionError('Method "%s" not found in "%s"' % (self.name, str(w_receiver)))
             if not space.is_normal_status():
                 print 'Returning non default value'
                 return space.w_return_value
