@@ -318,3 +318,22 @@ def test_object_write():
     assert res is space.w_nil
     assert space.w_lobby.slots['a'].slots['printed'] is space.w_true
     assert space.w_lobby.slots['b'].slots['printed'] is space.w_true
+
+def test_object_message_forwarding():
+    inp = """
+    a := Object clone do(
+        someValue := 23
+        forward := method(someValue)
+    )
+    a notThere"""
+    res, space = interpret(inp)
+    assert res.number_value == 23
+
+def test_object_forwarding_args():
+    inp = """
+    a := Object clone do(
+        forward := method(call message argAt(0)))
+    )
+    a notThere(46)"""
+    res, space = interpret(inp)
+    assert res.number_value == 46
