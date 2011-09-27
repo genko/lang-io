@@ -332,8 +332,9 @@ def test_object_message_forwarding():
 def test_object_forwarding_args():
     inp = """
     a := Object clone do(
-        forward := method(call message argAt(0)))
+        forward := method(call message argAt(0))
     )
     a notThere(46)"""
     res, space = interpret(inp)
-    assert res.number_value == 46
+    assert isinstance(res, W_Message)
+    assert res.name == "46"
